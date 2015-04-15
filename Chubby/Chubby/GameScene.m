@@ -95,10 +95,6 @@
         
         [_mainCharacter removeActionForKey:@"preJump"];
         
-       SKAction *actionTrampoline = [self animation:0 second:3 animationName:@"trampolim%d" duration:0.3];
-        [_trampoline runAction:[SKAction repeatActionForever: actionTrampoline]];
-        
-        
         SKAction *jump = [SKAction customActionWithDuration:duration actionBlock:^(SKNode *node, CGFloat elapsedTime) {
             
             //Ele caí de acordo com a duração de tempo, pois ele roda várias vezes enquanto o tempo ainda não estiver completo
@@ -122,6 +118,22 @@
     [_mainCharacter runAction:action1 withKey:@"fall"];
     
     _first=NO;
+}
+
+-(void)fly{
+    
+//    [_mainCharacter removeAllActions];
+    
+    [_mainCharacter runAction:
+     [SKAction repeatActionForever:[_mainCharacter flyAnimation]]
+                      withKey:@"fly" ];
+    
+    SKAction *move = [SKAction moveTo:
+                      CGPointMake(self.size.width, self.size.height/1.1)
+                             duration:0.7];
+    
+    [_mainCharacter runAction:move];
+    
 }
 
 -(SKAction *)animation: (int)first
@@ -162,9 +174,65 @@
     
 }
 
+-(void)collisionCheck{
+    
+    CGRect smallerFrame = CGRectInset(_trampoline.frame, 30, 30);
+    
+    if (CGRectIntersectsRect(_mainCharacter.frame, smallerFrame)) {
+        
+        NSMutableArray *texture = [[NSMutableArray alloc] initWithObjects:
+                                   [SKTexture textureWithImageNamed:@"trampolim0"],
+                                   [SKTexture textureWithImageNamed:@"trampolim1"],
+                                   [SKTexture textureWithImageNamed:@"trampolim2"],
+                                   [SKTexture textureWithImageNamed:@"trampolim3"],
+                                   [SKTexture textureWithImageNamed:@"trampolim4"],
+                                   nil];
+        
+        
+        
+        SKAction *actionTrampoline = [SKAction animateWithTextures:texture timePerFrame:0.03];
+        [_trampoline runAction:actionTrampoline withKey:@"trampoline"];
+        
+        
+        [self fly];
+    }
+    
+}
+
 - (void)update:(CFTimeInterval)currentTime {
     
     _secondCharacter.position = CGPointMake(_secondCharacter.position.x + 2, _secondCharacter.position.y);
+    
+    [self collisionCheck];
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @end
