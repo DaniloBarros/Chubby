@@ -25,6 +25,18 @@
 		9327D11E1ADEE0C200DE06EF /* trampolim2.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D1191ADEE0C200DE06EF /* trampolim2.png */; };
 		9327D11F1ADEE0C200DE06EF /* trampolim3.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D11A1ADEE0C200DE06EF /* trampolim3.png */; };
 		9327D1201ADEE0C200DE06EF /* trampolim4.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D11B1ADEE0C200DE06EF /* trampolim4.png */; };
+		9327D1261ADF080000DE06EF /* EnemyCharacterNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9327D1251ADF080000DE06EF /* EnemyCharacterNode.m */; };
+		9327D1321ADF0B5E00DE06EF /* magrelo0.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D1271ADF0B5E00DE06EF /* magrelo0.png */; };
+		9327D1331ADF0B5E00DE06EF /* magrelo1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D1281ADF0B5E00DE06EF /* magrelo1.png */; };
+		9327D1341ADF0B5E00DE06EF /* magrelo2.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D1291ADF0B5E00DE06EF /* magrelo2.png */; };
+		9327D1351ADF0B5E00DE06EF /* magrelo3.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D12A1ADF0B5E00DE06EF /* magrelo3.png */; };
+		9327D1361ADF0B5E00DE06EF /* magrelo4.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D12B1ADF0B5E00DE06EF /* magrelo4.png */; };
+		9327D1371ADF0B5E00DE06EF /* magrelo5.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D12C1ADF0B5E00DE06EF /* magrelo5.png */; };
+		9327D1381ADF0B5E00DE06EF /* magrelo6.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D12D1ADF0B5E00DE06EF /* magrelo6.png */; };
+		9327D1391ADF0B5E00DE06EF /* magrelo7.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D12E1ADF0B5E00DE06EF /* magrelo7.png */; };
+		9327D13A1ADF0B5E00DE06EF /* magrelo8.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D12F1ADF0B5E00DE06EF /* magrelo8.png */; };
+		9327D13B1ADF0B5E00DE06EF /* magrelo9.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D1301ADF0B5E00DE06EF /* magrelo9.png */; };
+		9327D13C1ADF0B5E00DE06EF /* magrelo10.png in Resources */ = {isa = PBXBuildFile; fileRef = 9327D1311ADF0B5E00DE06EF /* magrelo10.png */; };
 		937748551ADED7C200992316 /* animacao_pulo0.png in Resources */ = {isa = PBXBuildFile; fileRef = 937748371ADED7C200992316 /* animacao_pulo0.png */; };
 		937748561ADED7C200992316 /* animacao_pulo1.png in Resources */ = {isa = PBXBuildFile; fileRef = 937748381ADED7C200992316 /* animacao_pulo1.png */; };
 		937748571ADED7C200992316 /* animacao_pulo10.png in Resources */ = {isa = PBXBuildFile; fileRef = 937748391ADED7C200992316 /* animacao_pulo10.png */; };
@@ -99,6 +111,19 @@
 		9327D1191ADEE0C200DE06EF /* trampolim2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trampolim2.png; sourceTree = "<group>"; };
 		9327D11A1ADEE0C200DE06EF /* trampolim3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trampolim3.png; sourceTree = "<group>"; };
 		9327D11B1ADEE0C200DE06EF /* trampolim4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trampolim4.png; sourceTree = "<group>"; };
+		9327D1241ADF080000DE06EF /* EnemyCharacterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EnemyCharacterNode.h; path = ../EnemyCharacterNode.h; sourceTree = "<group>"; };
+		9327D1251ADF080000DE06EF /* EnemyCharacterNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EnemyCharacterNode.m; path = ../EnemyCharacterNode.m; sourceTree = "<group>"; };
+		9327D1271ADF0B5E00DE06EF /* magrelo0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo0.png; sourceTree = "<group>"; };
+		9327D1281ADF0B5E00DE06EF /* magrelo1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo1.png; sourceTree = "<group>"; };
+		9327D1291ADF0B5E00DE06EF /* magrelo2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo2.png; sourceTree = "<group>"; };
+		9327D12A1ADF0B5E00DE06EF /* magrelo3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo3.png; sourceTree = "<group>"; };
+		9327D12B1ADF0B5E00DE06EF /* magrelo4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo4.png; sourceTree = "<group>"; };
+		9327D12C1ADF0B5E00DE06EF /* magrelo5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo5.png; sourceTree = "<group>"; };
+		9327D12D1ADF0B5E00DE06EF /* magrelo6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo6.png; sourceTree = "<group>"; };
+		9327D12E1ADF0B5E00DE06EF /* magrelo7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo7.png; sourceTree = "<group>"; };
+		9327D12F1ADF0B5E00DE06EF /* magrelo8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo8.png; sourceTree = "<group>"; };
+		9327D1301ADF0B5E00DE06EF /* magrelo9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo9.png; sourceTree = "<group>"; };
+		9327D1311ADF0B5E00DE06EF /* magrelo10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magrelo10.png; sourceTree = "<group>"; };
 		937748371ADED7C200992316 /* animacao_pulo0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = animacao_pulo0.png; sourceTree = "<group>"; };
 		937748381ADED7C200992316 /* animacao_pulo1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = animacao_pulo1.png; sourceTree = "<group>"; };
 		937748391ADED7C200992316 /* animacao_pulo10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = animacao_pulo10.png; sourceTree = "<group>"; };
@@ -232,6 +257,8 @@
 			children = (
 				93DE3B921ADC38B3003607B3 /* AppDelegate.h */,
 				93DE3B931ADC38B3003607B3 /* AppDelegate.m */,
+				9327D1241ADF080000DE06EF /* EnemyCharacterNode.h */,
+				9327D1251ADF080000DE06EF /* EnemyCharacterNode.m */,
 				93DE3B951ADC38B3003607B3 /* GameScene.h */,
 				93DE3B961ADC38B3003607B3 /* GameScene.m */,
 				DFCFF3731ADEFA27001869B5 /* MainCharacterNode.h */,
@@ -281,6 +308,17 @@
 				9327D0FE1ADEDFE300DE06EF /* arvore1.png */,
 				9327D0FF1ADEDFE300DE06EF /* arvore2.png */,
 				9327D1001ADEDFE300DE06EF /* cenario.png */,
+				9327D1271ADF0B5E00DE06EF /* magrelo0.png */,
+				9327D1281ADF0B5E00DE06EF /* magrelo1.png */,
+				9327D1291ADF0B5E00DE06EF /* magrelo2.png */,
+				9327D12A1ADF0B5E00DE06EF /* magrelo3.png */,
+				9327D12B1ADF0B5E00DE06EF /* magrelo4.png */,
+				9327D12C1ADF0B5E00DE06EF /* magrelo5.png */,
+				9327D12D1ADF0B5E00DE06EF /* magrelo6.png */,
+				9327D12E1ADF0B5E00DE06EF /* magrelo7.png */,
+				9327D12F1ADF0B5E00DE06EF /* magrelo8.png */,
+				9327D1301ADF0B5E00DE06EF /* magrelo9.png */,
+				9327D1311ADF0B5E00DE06EF /* magrelo10.png */,
 				9327D1011ADEDFE300DE06EF /* ceu0.png */,
 				9327D1021ADEDFE300DE06EF /* ceu1.png */,
 				9327D1031ADEDFE300DE06EF /* ceu2.png */,
@@ -388,6 +426,7 @@
 				9327D11E1ADEE0C200DE06EF /* trampolim2.png in Resources */,
 				9327D11D1ADEE0C200DE06EF /* trampolim1.png in Resources */,
 				93ECD37A1ADD93A50067BE9F /* segundo.png in Resources */,
+				9327D1351ADF0B5E00DE06EF /* magrelo3.png in Resources */,
 				937748681ADED7C200992316 /* animacao_pulo26.png in Resources */,
 				9377486A1ADED7C200992316 /* animacao_pulo28.png in Resources */,
 				93DE3BA41ADC38B3003607B3 /* LaunchScreen.xib in Resources */,
@@ -397,6 +436,7 @@
 				937748631ADED7C200992316 /* animacao_pulo21.png in Resources */,
 				93DE3BBD1ADC3BAE003607B3 /* background.png in Resources */,
 				93DE3BA11ADC38B3003607B3 /* Images.xcassets in Resources */,
+				9327D13C1ADF0B5E00DE06EF /* magrelo10.png in Resources */,
 				937748661ADED7C200992316 /* animacao_pulo24.png in Resources */,
 				9327D1111ADEDFE300DE06EF /* chao0.png in Resources */,
 				9377485D1ADED7C200992316 /* animacao_pulo16.png in Resources */,
@@ -411,20 +451,27 @@
 				9377486F1ADED7C200992316 /* animacao_pulo6.png in Resources */,
 				9327D10E1ADEDFE300DE06EF /* ceu0.png in Resources */,
 				9327D1131ADEDFE300DE06EF /* chao2.png in Resources */,
+				9327D13A1ADF0B5E00DE06EF /* magrelo8.png in Resources */,
 				9377486D1ADED7C200992316 /* animacao_pulo4.png in Resources */,
+				9327D1371ADF0B5E00DE06EF /* magrelo5.png in Resources */,
 				937748721ADED7C200992316 /* animacao_pulo9.png in Resources */,
 				9327D10B1ADEDFE300DE06EF /* arvore1.png in Resources */,
 				937748691ADED7C200992316 /* animacao_pulo27.png in Resources */,
 				9327D10C1ADEDFE300DE06EF /* arvore2.png in Resources */,
 				93DE3BBB1ADC3A49003607B3 /* bolinha.png in Resources */,
 				937748671ADED7C200992316 /* animacao_pulo25.png in Resources */,
+				9327D1391ADF0B5E00DE06EF /* magrelo7.png in Resources */,
 				9327D10D1ADEDFE300DE06EF /* cenario.png in Resources */,
+				9327D1361ADF0B5E00DE06EF /* magrelo4.png in Resources */,
 				937748551ADED7C200992316 /* animacao_pulo0.png in Resources */,
+				9327D1321ADF0B5E00DE06EF /* magrelo0.png in Resources */,
 				9327D11C1ADEE0C200DE06EF /* trampolim0.png in Resources */,
+				9327D1341ADF0B5E00DE06EF /* magrelo2.png in Resources */,
 				93DE3B991ADC38B3003607B3 /* GameScene.sks in Resources */,
 				9377485F1ADED7C200992316 /* animacao_pulo18.png in Resources */,
 				9377485B1ADED7C200992316 /* animacao_pulo14.png in Resources */,
 				9327D1121ADEDFE300DE06EF /* chao1.png in Resources */,
+				9327D1381ADF0B5E00DE06EF /* magrelo6.png in Resources */,
 				9377486E1ADED7C200992316 /* animacao_pulo5.png in Resources */,
 				9377486B1ADED7C200992316 /* animacao_pulo29.png in Resources */,
 				9327D11F1ADEE0C200DE06EF /* trampolim3.png in Resources */,
@@ -432,8 +479,10 @@
 				9327D10F1ADEDFE300DE06EF /* ceu1.png in Resources */,
 				9327D10A1ADEDFE300DE06EF /* arvore0.png in Resources */,
 				9327D1201ADEE0C200DE06EF /* trampolim4.png in Resources */,
+				9327D13B1ADF0B5E00DE06EF /* magrelo9.png in Resources */,
 				937748581ADED7C200992316 /* animacao_pulo11.png in Resources */,
 				937748641ADED7C200992316 /* animacao_pulo22.png in Resources */,
+				9327D1331ADF0B5E00DE06EF /* magrelo1.png in Resources */,
 				937748571ADED7C200992316 /* animacao_pulo10.png in Resources */,
 				9377485A1ADED7C200992316 /* animacao_pulo13.png in Resources */,
 				9377485C1ADED7C200992316 /* animacao_pulo15.png in Resources */,
@@ -454,6 +503,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9327D1261ADF080000DE06EF /* EnemyCharacterNode.m in Sources */,
 				93DE3B9C1ADC38B3003607B3 /* GameViewController.m in Sources */,
 				93DE3B941ADC38B3003607B3 /* AppDelegate.m in Sources */,
 				93DE3B971ADC38B3003607B3 /* GameScene.m in Sources */,

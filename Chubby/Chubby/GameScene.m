@@ -8,6 +8,7 @@
 
 #import "GameScene.h"
 #import "MainCharacterNode.h"
+#import "EnemyCharacterNode.h"
 
 #define MAX_IMPULSE 100.0
 //static const float SECOND_CHARACTER_MOVE_POINTS_PER_SEC = 50.0;
@@ -16,7 +17,7 @@
 
 {
     MainCharacterNode *_mainCharacter;
-    SKSpriteNode *_secondCharacter;
+    EnemyCharacterNode *_enemy;
     SKSpriteNode *_trampoline;
     
     SKAction *_mainAction;
@@ -71,11 +72,11 @@
         
         _impulsePlus = 0;
         
-        //add a second character
-        _secondCharacter = [SKSpriteNode spriteNodeWithImageNamed:@"segundo"];
-        _secondCharacter.position = CGPointMake(self.size.width/15, self.size.height/19);
-        [_secondCharacter setScale:0.2];
-        [self addChild:_secondCharacter];
+        //add a enemy character
+        _enemy = [EnemyCharacterNode initWithPosition:
+                  CGPointMake(self.size.width/8, self.size.height/8.5)];
+        
+        [self addChild:_enemy];
         
         
         _first = YES;
@@ -164,7 +165,7 @@
 
 - (void)update:(CFTimeInterval)currentTime {
     
-    _secondCharacter.position = CGPointMake(_secondCharacter.position.x + 2, _secondCharacter.position.y);
+    _enemy.position = CGPointMake(_enemy.position.x + 2, _enemy.position.y);
 }
 
 @end
