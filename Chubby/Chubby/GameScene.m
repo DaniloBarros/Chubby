@@ -7,6 +7,7 @@
 //
 
 #import "GameScene.h"
+#import "MainCharacterNode.h"
 
 #define MAX_IMPULSE 100.0
 //static const float SECOND_CHARACTER_MOVE_POINTS_PER_SEC = 50.0;
@@ -14,7 +15,7 @@
 @implementation GameScene
 
 {
-    SKSpriteNode *_mainCharacter;
+    MainCharacterNode *_mainCharacter;
     SKSpriteNode *_secondCharacter;
     SKSpriteNode *_trampoline;
     
@@ -63,13 +64,8 @@
         [self addChild:ground];
         
         //add main caracter
-        _mainCharacter = [SKSpriteNode spriteNodeWithImageNamed:@"animacao_pulo0"];
-        _mainCharacter.position = CGPointMake(self.size.width/5.5, self.size.height*0.81);
-        [_mainCharacter setScale:0.3/3];
-        
-        //addAnimation
-        SKAction *action = [self animation:1 second:6 animationName:@"animacao_pulo%d" duration:0.2];
-        [_mainCharacter runAction:  [SKAction repeatActionForever:action]];
+        _mainCharacter = [MainCharacterNode initWithPosition:
+                          CGPointMake(self.size.width/5.5, self.size.height*0.81)];
         
         [self addChild:_mainCharacter];
         
@@ -97,8 +93,7 @@
     if(jump){
         _impulse = 50;
         
-        SKAction *action = [self animation:7 second:15 animationName:@"animacao_pulo%d" duration:0.1];
-        [_mainCharacter runAction:  [SKAction repeatActionForever:action]];
+        [_mainCharacter removeActionForKey:@"preJump"];
         
        SKAction *actionTrampoline = [self animation:0 second:3 animationName:@"trampolim%d" duration:0.3];
         [_trampoline runAction:[SKAction repeatActionForever: actionTrampoline]];
@@ -115,16 +110,16 @@
             
         }];
         
-        action1 = [SKAction sequence:@[jump]];
+        action1 = [SKAction group:@[jump,[_mainCharacter fallAnimation]]];
         
     }else{
         
-        SKAction *actionFirst = [self animation:16 second:29 animationName:@"animacao_pulo%d" duration:0.2];
-        [_mainCharacter runAction:  [SKAction repeatActionForever:actionFirst]];
-        action1 = [SKAction customActionWithDuration:0.2 actionBlock:^(SKNode *node, CGFloat elapsedTime) {
-        }];
+        //[_mainCharacter runAction:[_mainCharacter flyAnimation]];
+        action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
+        
     }
-    [_mainCharacter runAction:action1];
+    
+    [_mainCharacter runAction:action1 withKey:@"fall"];
     
     _first=NO;
 }
@@ -150,11 +145,11 @@
         
         
     }
-    _mainAction = [SKAction animateWithTextures:textures timePerFrame:duration];
+    SKAction *action = [SKAction animateWithTextures:textures timePerFrame:duration];
     
     
     
-    return _mainAction;
+    return action;
 }
 
 

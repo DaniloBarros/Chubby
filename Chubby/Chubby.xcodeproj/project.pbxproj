@@ -67,6 +67,7 @@
 		93DE3BBB1ADC3A49003607B3 /* bolinha.png in Resources */ = {isa = PBXBuildFile; fileRef = 93DE3BBA1ADC3A49003607B3 /* bolinha.png */; };
 		93DE3BBD1ADC3BAE003607B3 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 93DE3BBC1ADC3BAE003607B3 /* background.png */; };
 		93ECD37A1ADD93A50067BE9F /* segundo.png in Resources */ = {isa = PBXBuildFile; fileRef = 93ECD3791ADD93A50067BE9F /* segundo.png */; };
+		DFCFF3751ADEFA27001869B5 /* MainCharacterNode.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -147,6 +148,8 @@
 		93DE3BBA1ADC3A49003607B3 /* bolinha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bolinha.png; sourceTree = "<group>"; };
 		93DE3BBC1ADC3BAE003607B3 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = background.png; path = ../background.png; sourceTree = "<group>"; };
 		93ECD3791ADD93A50067BE9F /* segundo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = segundo.png; path = ../Chubby/segundo.png; sourceTree = "<group>"; };
+		DFCFF3731ADEFA27001869B5 /* MainCharacterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainCharacterNode.h; sourceTree = "<group>"; };
+		DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainCharacterNode.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,13 +204,13 @@
 				937748531ADED7C200992316 /* animacao_pulo8.png */,
 				937748541ADED7C200992316 /* animacao_pulo9.png */,
 			);
-			path = chubby_salto;
+			name = chubby_salto;
+			path = ../chubby_salto;
 			sourceTree = "<group>";
 		};
 		93DE3B821ADC38B3003607B3 = {
 			isa = PBXGroup;
 			children = (
-				937748361ADED7C200992316 /* chubby_salto */,
 				93DE3BB91ADC3A49003607B3 /* imagens */,
 				93DE3B8D1ADC38B3003607B3 /* Chubby */,
 				93DE3BAC1ADC38B3003607B3 /* ChubbyTests */,
@@ -231,6 +234,8 @@
 				93DE3B931ADC38B3003607B3 /* AppDelegate.m */,
 				93DE3B951ADC38B3003607B3 /* GameScene.h */,
 				93DE3B961ADC38B3003607B3 /* GameScene.m */,
+				DFCFF3731ADEFA27001869B5 /* MainCharacterNode.h */,
+				DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */,
 				93DE3B981ADC38B3003607B3 /* GameScene.sks */,
 				93DE3B9A1ADC38B3003607B3 /* GameViewController.h */,
 				93DE3B9B1ADC38B3003607B3 /* GameViewController.m */,
@@ -271,6 +276,7 @@
 		93DE3BB91ADC3A49003607B3 /* imagens */ = {
 			isa = PBXGroup;
 			children = (
+				937748361ADED7C200992316 /* chubby_salto */,
 				9327D0FD1ADEDFE300DE06EF /* arvore0.png */,
 				9327D0FE1ADEDFE300DE06EF /* arvore1.png */,
 				9327D0FF1ADEDFE300DE06EF /* arvore2.png */,
@@ -451,6 +457,7 @@
 				93DE3B9C1ADC38B3003607B3 /* GameViewController.m in Sources */,
 				93DE3B941ADC38B3003607B3 /* AppDelegate.m in Sources */,
 				93DE3B971ADC38B3003607B3 /* GameScene.m in Sources */,
+				DFCFF3751ADEFA27001869B5 /* MainCharacterNode.m in Sources */,
 				93DE3B911ADC38B3003607B3 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
