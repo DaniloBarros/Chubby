@@ -9,9 +9,69 @@
 #import "GameScene.h"
 #import "MainCharacterNode.h"
 #import "EnemyCharacterNode.h"
+#import "PBParallaxScrolling.h"
 
-#define MAX_IMPULSE 100.0
-//static const float SECOND_CHARACTER_MOVE_POINTS_PER_SEC = 50.0;
+//#define MAX_IMPULSE 100.0
+#define ARC4RANDOM_MAX  0x100000000
+
+/*
+static const float SECOND_CHARACTER_MOVE_POINTS_PER_SEC = 50.0;
+
+static const CGFloat gravityY = -5.0;
+
+
+static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
+    return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
+}
+
+static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
+    return CGPointMake(a.x + b.x, a.y + b.y);
+}
+
+static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
+    return CGPointMake(a.x - b.x, a.y - b.y);
+}
+
+static inline CGPoint CGPointMultiplyScalar(const CGPoint a, const CGFloat x){
+    return CGPointMake(a.x * x, a.y * x);
+}
+
+static inline CGFloat CGPointLenght(const CGPoint a){
+    return sqrt(a.x * a.x + a.y * a.y);
+}
+
+static inline CGPoint CGPointNormalize(const CGPoint a){
+    CGFloat lenght = CGPointLenght(a);
+    return CGPointMake(a.x/lenght, a.y/lenght);
+}
+
+static inline CGFloat CGPointToAgle(const CGPoint a){
+    return atan2f(a.y, a.x);
+}
+
+static inline CGFloat CGPointDistance(const CGPoint a, const CGPoint b){
+    return sqrtf(powf(a.x - a.y, 2.0) + powf(b.x - b.y, 2.0));
+}
+
+static inline CGFloat ScalarSign(CGFloat a){
+    return a >= 0 ? 1 : -1;
+}
+
+static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat b){
+    
+    CGFloat difference = b - a;
+    CGFloat angle = fmodf(difference, M_PI * 2);
+    
+    if (angle >= M_PI) {
+        angle -= M_PI * 2;
+        
+    }else if (angle <= -M_PI){
+        angle += M_PI * 2;
+    }
+    return angle;
+}
+
+ */
 
 @implementation GameScene
 
@@ -19,13 +79,24 @@
     MainCharacterNode *_mainCharacter;
     EnemyCharacterNode *_enemy;
     SKSpriteNode *_trampoline;
+    SKSpriteNode *_ground;
+    SKSpriteNode *_tree;
+    SKSpriteNode *_building;
     
     SKAction *_mainAction;
     
-    BOOL _first;
+    BOOL _first, _parallaxIsOn;
     
     CGFloat _impulse;
     CGFloat _impulsePlus;
+    
+    NSTimeInterval _lastUpdatedTime;
+    NSTimeInterval _dt;
+    
+    NSArray *_imageParallax;
+    PBParallaxScrolling *_parallax;
+    
+    CGFloat _speed;
     
 }
 
@@ -33,42 +104,49 @@
     
     if(self = [super initWithSize:size]){
         
-        self.backgroundColor = [SKColor whiteColor];
+        //self.backgroundColor = [SKColor whiteColor];
         
         //add scenario game
         //add sky
-        SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"ceu0"];
+        SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"ceu1"];
         bg.anchorPoint = CGPointZero;
         bg.position = CGPointZero;
+        bg.zPosition = -1000;
         [self addChild:bg];
+        
+        //add MainCharacter
+        _mainCharacter = [MainCharacterNode initWithPosition:
+                          CGPointMake(self.size.width/5.5, self.size.height*0.7)];
+        
+        //add ground
+        _ground = [SKSpriteNode spriteNodeWithImageNamed:@"chaoParallax@2x"];
+        _ground.anchorPoint = CGPointMake(0, .07);
+        _ground.position = CGPointMake(0, _ground.size.height*.07);
+        _ground.zPosition = -996;
+        
 
         //add building
-        SKSpriteNode *building = [SKSpriteNode spriteNodeWithImageNamed:@"predio0"];
-        building.position = CGPointMake(self.size.width/6.5, self.size.height/2.7) ;
-        [self addChild:building];
+        _building = [SKSpriteNode spriteNodeWithImageNamed:@"predio1"];
+        _building.position = CGPointZero;
+        _building.anchorPoint = CGPointZero;
+        _building.zPosition = -999;
+        [_building setScale:0.5];
+        
         
         //add trampoline
         _trampoline = [SKSpriteNode spriteNodeWithImageNamed:@"trampolim0"];
         _trampoline.position = CGPointMake(self.size.width/3.5, self.size.height/4.5);
         [_trampoline setScale:0.6];
-        [self addChild:_trampoline];
+        _trampoline.zPosition = -998;
+        
         
         //add tree
-        SKSpriteNode *tree = [SKSpriteNode spriteNodeWithImageNamed:@"arvore0"];
-        tree.position = CGPointMake(self.size.width*0.7, self.size.height/3);
-        [tree setScale:0.9];
-        [self addChild:tree];
+        _tree = [SKSpriteNode spriteNodeWithImageNamed:@"arvore1"];
+        _tree.anchorPoint = CGPointMake(0.5, 0);
+        _tree.position = CGPointMake(self.size.width*0.7, _ground.position.y);
+        [_tree setScale:0.45];
+        _tree.zPosition = -997;
         
-        //add ground
-        SKSpriteNode *ground = [SKSpriteNode spriteNodeWithImageNamed:@"chao0"];
-        ground.position = CGPointMake(self.size.width/6, self.size.height/15);
-        [self addChild:ground];
-        
-        //add main caracter
-        _mainCharacter = [MainCharacterNode initWithPosition:
-                          CGPointMake(self.size.width/5.5, self.size.height*0.81)];
-        
-        [self addChild:_mainCharacter];
         
         _impulsePlus = 0;
         
@@ -76,11 +154,23 @@
         _enemy = [EnemyCharacterNode initWithPosition:
                   CGPointMake(self.size.width/8, self.size.height/8.5)];
         
-        [self addChild:_enemy];
         
+        [self addChild:_building];
+        [self addChild:_trampoline];
+        [self addChild:_tree];
+        [self addChild:_ground];
+        [self addChild:_mainCharacter];
+        
+        //[self addChild:_enemy];
         
         _first = YES;
         
+        _imageParallax = @[@"chaoParallax@2x",
+                           @"arvoreParallax@2x",
+                           @"NuvemParallax@2x"];
+        _parallaxIsOn = NO;
+        
+        _speed = 0;
     }
     return self;
 }
@@ -101,7 +191,7 @@
             //Ele caí de acordo com a duração de tempo, pois ele roda várias vezes enquanto o tempo ainda não estiver completo
             float fraction = elapsedTime/(duration/1.58);
             float yOff = (_impulse + _impulsePlus) * 4 * fraction * (1 - fraction);
-            float xOff = (_impulse/30) * (_impulse/30) * fraction;
+            float xOff = (_impulse/26) * (_impulse/26) * fraction;
             
             node.position = CGPointMake(node.position.x + xOff, characterPos.y + yOff);
             
@@ -113,6 +203,7 @@
         
         //[_mainCharacter runAction:[_mainCharacter flyAnimation]];
         action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
+
         
     }
     
@@ -121,16 +212,14 @@
     _first=NO;
 }
 
--(void)fly{
-    
-//    [_mainCharacter removeAllActions];
+-(void)launch{
     
     [_mainCharacter runAction:
      [SKAction repeatActionForever:[_mainCharacter flyAnimation]]
-                      withKey:@"fly" ];
+                      withKey:@"launch" ];
     
     SKAction *move = [SKAction moveTo:
-                      CGPointMake(self.size.width, self.size.height/1.1)
+                      CGPointMake(self.size.width, self.size.height/1.3)
                              duration:0.7];
     
     [_mainCharacter runAction:move];
@@ -195,15 +284,67 @@
         [_trampoline runAction:actionTrampoline withKey:@"trampoline"];
         
         
-        [self fly];
+        [self launch];
     }
     
+    CGPoint mainPosition = _mainCharacter.position;
+    
+    if (mainPosition.x >= self.size.width && !_parallaxIsOn) {
+        
+        _speed = 6;
+        
+        _parallax = [[PBParallaxScrolling alloc] initWithBackgrounds:_imageParallax
+                                                                size:self.size
+                                                           direction:kPBParallaxBackgroundDirectionLeft
+                                                        fastestSpeed:_speed
+                                                    andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
+        
+        [self addChild:_parallax];
+        
+        _parallaxIsOn = YES;
+        
+    }
+    
+}
+
+-(void)moveLeft{
+    
+    if (_speed) {
+        if (_building) {
+            _building.position = CGPointMake(_building.position.x - _speed, _building.position.y);
+        }
+        if (_ground) {
+            _ground.position = CGPointMake(_ground.position.x - _speed, _ground.position.y);
+        }
+        if (_trampoline) {
+            _trampoline.position = CGPointMake(_trampoline.position.x - _speed, _trampoline.position.y);
+        }
+        if (_tree) {
+            _tree.position = CGPointMake(_tree.position.x - _speed, _tree.position.y);
+        }
+    }
 }
 
 - (void)update:(CFTimeInterval)currentTime {
     
     _enemy.position = CGPointMake(_enemy.position.x + 2, _enemy.position.y);
+    
+    if (_lastUpdatedTime) {
+        _dt = currentTime - _lastUpdatedTime;
+    }else{
+        _dt = 0;
+    }
+    
+    _lastUpdatedTime = currentTime;
+    
+    [self moveLeft];
+    
+    [_parallax update:currentTime];
+    
+}
 
+-(void) didEvaluateActions{
+    
     [self collisionCheck];
     
 }
