@@ -14,7 +14,7 @@
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
 
-/*
+
 static const float SECOND_CHARACTER_MOVE_POINTS_PER_SEC = 50.0;
 
 static const CGFloat gravityY = -5.0;
@@ -23,7 +23,7 @@ static const CGFloat gravityY = -5.0;
 static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
     return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
 }
-
+/*
 static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
     return CGPointMake(a.x + b.x, a.y + b.y);
 }
@@ -35,7 +35,7 @@ static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
 static inline CGPoint CGPointMultiplyScalar(const CGPoint a, const CGFloat x){
     return CGPointMake(a.x * x, a.y * x);
 }
-
+*/
 static inline CGFloat CGPointLenght(const CGPoint a){
     return sqrt(a.x * a.x + a.y * a.y);
 }
@@ -44,7 +44,7 @@ static inline CGPoint CGPointNormalize(const CGPoint a){
     CGFloat lenght = CGPointLenght(a);
     return CGPointMake(a.x/lenght, a.y/lenght);
 }
-
+ 
 static inline CGFloat CGPointToAgle(const CGPoint a){
     return atan2f(a.y, a.x);
 }
@@ -71,7 +71,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     return angle;
 }
 
- */
+ 
 
 @implementation GameScene
 
@@ -322,8 +322,39 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         if (_tree) {
             _tree.position = CGPointMake(_tree.position.x - _speed, _tree.position.y);
         }
+        if (_mainCharacter && _mainCharacter.position.x >= self.size.width/5.5) {
+            _mainCharacter.position = CGPointMake(_mainCharacter.position.x - _speed, _mainCharacter.position.y);
+            
+            
+            CGPoint velocity = CGPointNormalize(CGPointMake(0, -10));
+            
+            
+            [self rotateSprite:(SKSpriteNode*)_mainCharacter
+                        toFace:velocity
+            rotateRadiasPerSec:M_PI_4
+                         speed:velocity];
+        }
     }
 }
+
+
+-(void)rotateSprite:(SKSpriteNode *)sprite
+             toFace:(CGPoint)direction
+ rotateRadiasPerSec:(CGFloat)rotateRadiansPerSec
+              speed:(CGPoint)speed{
+    
+    float targetAngle = CGPointToAgle(speed);
+    float shortest = ScalarShortestAngleBetween(sprite.zRotation, targetAngle);
+    float amountToRotate = rotateRadiansPerSec * _dt;
+    
+    if (ABS(shortest) < amountToRotate) {
+        amountToRotate = ABS(shortest);
+    }
+    
+    sprite.zRotation += ScalarSign(shortest) * amountToRotate;
+    
+}
+
 
 - (void)update:(CFTimeInterval)currentTime {
     
