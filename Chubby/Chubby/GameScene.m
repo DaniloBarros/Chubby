@@ -14,8 +14,7 @@
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
 
-/*
-static const float SECOND_CHARACTER_MOVE_POINTS_PER_SEC = 50.0;
+
 
 static const CGFloat gravityY = -5.0;
 
@@ -71,7 +70,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     return angle;
 }
 
- */
+
 
 @implementation GameScene
 
@@ -100,6 +99,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     PBParallaxScrolling *_parallax;
     
     CGFloat _speed;
+    
+    CGFloat _timeToNextShot;
     
 }
 
@@ -165,7 +166,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [self addChild:_ground];
         [self addChild:_mainCharacter];
         
-        //[self addChild:_enemy];
+        [self addChild:_enemy];
         
         _first = YES;
         
@@ -315,7 +316,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     CGPoint mainPosition = _mainCharacter.position;
     
-    if (mainPosition.x >= self.size.width && !_parallaxIsOn) {
+    if (mainPosition.x >= self.size.width  && !_parallaxIsOn) {
         
         _speed = 6;
         
@@ -353,7 +354,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 - (void)update:(CFTimeInterval)currentTime {
-    
+
     if (_lastUpdatedTime) {
         _dt = currentTime - _lastUpdatedTime;
     }else{
@@ -364,8 +365,24 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     [self moveLeft];
     
+    [self timeShotInterval: currentTime];
+    
     [_parallax update:currentTime];
     
+}
+
+-(void)timeShotInterval: (CFTimeInterval)currentTime{
+    
+    if (_timeToNextShot - currentTime <= 0 && _parallaxIsOn) {
+        
+        [self playShot];
+        
+        _timeToNextShot = ScalarRandomRange(5, 10);
+        
+        _timeToNextShot +=currentTime;
+    }
+
+
 }
 
 -(void) didEvaluateActions{
