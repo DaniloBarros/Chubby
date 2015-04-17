@@ -16,16 +16,13 @@
 #define SUPER_FALL 7
 #define NATURAL_FALL 0.4
 
-/*
-static const float SECOND_CHARACTER_MOVE_POINTS_PER_SEC = 50.0;
-
-static const CGFloat gravityY = -5.0;
+//static const CGFloat gravityY = -5.0;
 
 
 static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
     return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
 }
-
+/*
 static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
     return CGPointMake(a.x + b.x, a.y + b.y);
 }
@@ -36,8 +33,8 @@ static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
 
 static inline CGPoint CGPointMultiplyScalar(const CGPoint a, const CGFloat x){
     return CGPointMake(a.x * x, a.y * x);
-}
-*/
+}*/
+
 static inline CGFloat CGPointLenght(const CGPoint a){
     return sqrt(a.x * a.x + a.y * a.y);
 }
@@ -73,7 +70,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     return angle;
 }
 
- 
 
 @implementation GameScene
 
@@ -104,6 +100,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     CGFloat _speed;
     
     CGFloat _fall;
+    
+    CGFloat _timeToNextShot;
     
 }
 
@@ -169,7 +167,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [self addChild:_ground];
         [self addChild:_mainCharacter];
         
-        //[self addChild:_enemy];
+        [self addChild:_enemy];
         
         _first = YES;
         
@@ -318,7 +316,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     CGPoint mainPosition = _mainCharacter.position;
     
-    if (mainPosition.x >= self.size.width && !_parallaxIsOn) {
+    if (mainPosition.x >= self.size.width  && !_parallaxIsOn) {
         
         _speed = 50;
         
@@ -387,7 +385,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 - (void)update:(CFTimeInterval)currentTime {
-    
+
     if (_lastUpdatedTime) {
         _dt = currentTime - _lastUpdatedTime;
     }else{
@@ -398,12 +396,28 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     [self moveLeft];
     
+    [self timeShotInterval: currentTime];
+    
     [_parallax update:currentTime];
  
     if (!_first) {
      [self gravityFall:_fall];
     }
     
+}
+
+-(void)timeShotInterval: (CFTimeInterval)currentTime{
+    
+    if (_timeToNextShot - currentTime <= 0 && _parallaxIsOn) {
+        
+        [self playShot];
+        
+        _timeToNextShot = ScalarRandomRange(5, 10);
+        
+        _timeToNextShot +=currentTime;
+    }
+
+
 }
 
 -(void) didEvaluateActions{
