@@ -10,6 +10,7 @@
 #import "MainCharacterNode.h"
 #import "EnemyCharacterNode.h"
 #import "PBParallaxScrolling.h"
+#import "ItensNode.h"
 
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
@@ -22,7 +23,7 @@
 static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
     return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
 }
-/**/
+
 static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
     return CGPointMake(a.x + b.x, a.y + b.y);
 }
@@ -75,9 +76,11 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 {
     MainCharacterNode *_mainCharacter;
     EnemyCharacterNode *_enemy;
+    ItensNode *_item;
     
     SKSpriteNode *_trampoline;
     SKSpriteNode *_bullet;
+    SKSpriteNode *_bulletCollision;
 
     SKSpriteNode *_ground;
     SKSpriteNode *_tree;
@@ -157,6 +160,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         //add a enemy character
         _enemy = [EnemyCharacterNode initWithPosition:
                   CGPointMake(self.size.width/1.2, self.size.height/10)];
+        
+        //add a item
+        _item = [ItensNode initWithPosition:CGPointMake(self.size.width/2, self.size.height/2)];
         
         
 
@@ -251,7 +257,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
     [_bullet runAction:[SKAction repeatActionForever:[_enemy playShotAnimation]]withKey:@"shot"];
     
-    SKAction *shot = [SKAction moveTo:CGPointMake(self.size.width/5.5 , _mainCharacter.position.y ) duration:5];
+    SKAction *shot = [SKAction moveTo:CGPointMake(self.size.width/5.5 , _mainCharacter.position.y ) duration:2];
     SKAction *sequenceShot = [SKAction sequence:@[shot, [SKAction waitForDuration:50]]];
     
     [_bullet runAction:sequenceShot];
@@ -337,6 +343,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                                     andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
         
         [self addChild:_parallax];
+        [self addChild:_item];
         
         _parallaxIsOn = YES;
         
