@@ -36,7 +36,7 @@
         [textures addObject:texture];
     }
     
-    for (int i=6; i>1; i--) {
+    for (int i=6; i>0; i--) {
         NSString *name = [NSString stringWithFormat:@"animacao_pulo%d",i];
         SKTexture *texture = [SKTexture textureWithImageNamed:name];
         [textures addObject:texture];
