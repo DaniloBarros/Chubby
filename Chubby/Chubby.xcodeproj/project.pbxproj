@@ -215,6 +215,11 @@
 		93DE3BA41ADC38B3003607B3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 93DE3BA21ADC38B3003607B3 /* LaunchScreen.xib */; };
 		93DE3BB01ADC38B3003607B3 /* ChubbyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 93DE3BAF1ADC38B3003607B3 /* ChubbyTests.m */; };
 		DFCFF3751ADEFA27001869B5 /* MainCharacterNode.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */; };
+		DFCFF3781ADFEE30001869B5 /* PBParallaxScrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCFF3771ADFEE30001869B5 /* PBParallaxScrolling.m */; };
+		DFCFF37E1AE022F9001869B5 /* arvoreParallax@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCFF37A1AE022F9001869B5 /* arvoreParallax@2x.png */; };
+		DFCFF37F1AE022F9001869B5 /* arvoresParallaxFront@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCFF37B1AE022F9001869B5 /* arvoresParallaxFront@2x.png */; };
+		DFCFF3801AE022F9001869B5 /* chaoParallax@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCFF37C1AE022F9001869B5 /* chaoParallax@2x.png */; };
+		DFCFF3811AE022F9001869B5 /* NuvemParallax@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCFF37D1AE022F9001869B5 /* NuvemParallax@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -445,6 +450,12 @@
 		93DE3BAF1ADC38B3003607B3 /* ChubbyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChubbyTests.m; sourceTree = "<group>"; };
 		DFCFF3731ADEFA27001869B5 /* MainCharacterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainCharacterNode.h; sourceTree = "<group>"; };
 		DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainCharacterNode.m; sourceTree = "<group>"; };
+		DFCFF3761ADFEE30001869B5 /* PBParallaxScrolling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBParallaxScrolling.h; sourceTree = "<group>"; };
+		DFCFF3771ADFEE30001869B5 /* PBParallaxScrolling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBParallaxScrolling.m; sourceTree = "<group>"; };
+		DFCFF37A1AE022F9001869B5 /* arvoreParallax@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arvoreParallax@2x.png"; sourceTree = "<group>"; };
+		DFCFF37B1AE022F9001869B5 /* arvoresParallaxFront@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arvoresParallaxFront@2x.png"; sourceTree = "<group>"; };
+		DFCFF37C1AE022F9001869B5 /* chaoParallax@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chaoParallax@2x.png"; sourceTree = "<group>"; };
+		DFCFF37D1AE022F9001869B5 /* NuvemParallax@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "NuvemParallax@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -712,6 +723,8 @@
 		93DE3B8D1ADC38B3003607B3 /* Chubby */ = {
 			isa = PBXGroup;
 			children = (
+				DFCFF3761ADFEE30001869B5 /* PBParallaxScrolling.h */,
+				DFCFF3771ADFEE30001869B5 /* PBParallaxScrolling.m */,
 				93DE3B921ADC38B3003607B3 /* AppDelegate.h */,
 				93DE3B931ADC38B3003607B3 /* AppDelegate.m */,
 				93803E7B1AE030BB00825672 /* EnemyCharacterNode.m */,
@@ -764,8 +777,53 @@
 				93803F5A1AE0345900825672 /* Parallax */,
 				93803F5F1AE0345900825672 /* trampolim */,
 				93803E7E1AE0320700825672 /* chubby_salto */,
+				DFCFF3791AE022F9001869B5 /* Parallax */,
+				937748361ADED7C200992316 /* chubby_salto */,
+				9327D0FD1ADEDFE300DE06EF /* arvore0.png */,
+				9327D0FE1ADEDFE300DE06EF /* arvore1.png */,
+				9327D0FF1ADEDFE300DE06EF /* arvore2.png */,
+				9327D1001ADEDFE300DE06EF /* cenario.png */,
+				9327D1271ADF0B5E00DE06EF /* magrelo0.png */,
+				9327D1281ADF0B5E00DE06EF /* magrelo1.png */,
+				9327D1291ADF0B5E00DE06EF /* magrelo2.png */,
+				9327D12A1ADF0B5E00DE06EF /* magrelo3.png */,
+				9327D12B1ADF0B5E00DE06EF /* magrelo4.png */,
+				9327D12C1ADF0B5E00DE06EF /* magrelo5.png */,
+				9327D12D1ADF0B5E00DE06EF /* magrelo6.png */,
+				9327D12E1ADF0B5E00DE06EF /* magrelo7.png */,
+				9327D12F1ADF0B5E00DE06EF /* magrelo8.png */,
+				9327D1301ADF0B5E00DE06EF /* magrelo9.png */,
+				9327D1311ADF0B5E00DE06EF /* magrelo10.png */,
+				9327D1011ADEDFE300DE06EF /* ceu0.png */,
+				9327D1021ADEDFE300DE06EF /* ceu1.png */,
+				9327D1031ADEDFE300DE06EF /* ceu2.png */,
+				9327D1041ADEDFE300DE06EF /* chao0.png */,
+				9327D1051ADEDFE300DE06EF /* chao1.png */,
+				9327D1061ADEDFE300DE06EF /* chao2.png */,
+				9327D1071ADEDFE300DE06EF /* predio0.png */,
+				9327D1081ADEDFE300DE06EF /* predio1.png */,
+				9327D1091ADEDFE300DE06EF /* predio2.png */,
+				9327D1171ADEE0C200DE06EF /* trampolim0.png */,
+				9327D1181ADEE0C200DE06EF /* trampolim1.png */,
+				9327D1191ADEE0C200DE06EF /* trampolim2.png */,
+				9327D11A1ADEE0C200DE06EF /* trampolim3.png */,
+				9327D11B1ADEE0C200DE06EF /* trampolim4.png */,
+				93DE3BBC1ADC3BAE003607B3 /* background.png */,
+				93ECD3791ADD93A50067BE9F /* segundo.png */,
+				93DE3BBA1ADC3A49003607B3 /* bolinha.png */,
 			);
 			path = imagens;
+			sourceTree = "<group>";
+		};
+		DFCFF3791AE022F9001869B5 /* Parallax */ = {
+			isa = PBXGroup;
+			children = (
+				DFCFF37A1AE022F9001869B5 /* arvoreParallax@2x.png */,
+				DFCFF37B1AE022F9001869B5 /* arvoresParallaxFront@2x.png */,
+				DFCFF37C1AE022F9001869B5 /* chaoParallax@2x.png */,
+				DFCFF37D1AE022F9001869B5 /* NuvemParallax@2x.png */,
+			);
+			path = Parallax;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -871,6 +929,7 @@
 				93803FD91AE0345900825672 /* magrelo0116.png in Resources */,
 				93803FC31AE0345900825672 /* magrelo0094.png in Resources */,
 				93803F8E1AE0345900825672 /* magrelo0041.png in Resources */,
+
 				93DE3BA41ADC38B3003607B3 /* LaunchScreen.xib in Resources */,
 				93803F7D1AE0345900825672 /* magrelo0024.png in Resources */,
 				93803F9D1AE0345900825672 /* magrelo0056.png in Resources */,
@@ -961,6 +1020,7 @@
 				93803FD81AE0345900825672 /* magrelo0115.png in Resources */,
 				93803F771AE0345900825672 /* magrelo0018.png in Resources */,
 				93803FE91AE0345900825672 /* magrelo0132.png in Resources */,
+
 				93DE3B991ADC38B3003607B3 /* GameScene.sks in Resources */,
 				93803F9A1AE0345900825672 /* magrelo0053.png in Resources */,
 				93803F911AE0345900825672 /* magrelo0044.png in Resources */,
@@ -1049,6 +1109,8 @@
 				93803FCC1AE0345900825672 /* magrelo0103.png in Resources */,
 				93803F8C1AE0345900825672 /* magrelo0039.png in Resources */,
 				93803FB51AE0345900825672 /* magrelo0080.png in Resources */,
+
+
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1066,6 +1128,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+
+				DFCFF3781ADFEE30001869B5 /* PBParallaxScrolling.m in Sources */,
+
 				93DE3B9C1ADC38B3003607B3 /* GameViewController.m in Sources */,
 				93DE3B941ADC38B3003607B3 /* AppDelegate.m in Sources */,
 				93DE3B971ADC38B3003607B3 /* GameScene.m in Sources */,

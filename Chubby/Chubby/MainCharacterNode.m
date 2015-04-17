@@ -12,9 +12,11 @@
 
 +(id)initWithPosition:(CGPoint)position{
     
-    MainCharacterNode *main = [self spriteNodeWithImageNamed:@"animacao_pulo0"];
+    MainCharacterNode *main = [self spriteNodeWithImageNamed:@"animacao_pulo1"];
     main.position = position;
+    
     [main setScale:0.3/3];
+    main.anchorPoint = CGPointMake(0.5, 0);
     
     SKAction *repeat = [SKAction repeatActionForever:[main preJumpAnimation]];
     
