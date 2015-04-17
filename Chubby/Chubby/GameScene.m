@@ -22,7 +22,7 @@
 static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
     return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
 }
-/*
+/**/
 static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
     return CGPointMake(a.x + b.x, a.y + b.y);
 }
@@ -33,8 +33,7 @@ static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
 
 static inline CGPoint CGPointMultiplyScalar(const CGPoint a, const CGFloat x){
     return CGPointMake(a.x * x, a.y * x);
-}*/
-
+}
 static inline CGFloat CGPointLenght(const CGPoint a){
     return sqrt(a.x * a.x + a.y * a.y);
 }
@@ -175,7 +174,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                            @"arvoreParallax@2x",
                            @"NuvemParallax@2x"];
         _parallaxIsOn = NO;
-        
+
         _speed = 0;
 
     }
@@ -206,15 +205,22 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         action1 = [SKAction group:@[jump,[_mainCharacter fallAnimation]]];
         
+        [_mainCharacter runAction:action1 withKey:@"preLaunch"];
+        
     }else{
         
-        //[_mainCharacter runAction:[_mainCharacter flyAnimation]];
+        if (![_mainCharacter actionForKey:@"preLaunch"]) {
     
-        action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
+            [_mainCharacter removeActionForKey:@"launch"];
+            _mainCharacter.zRotation = 0;
+            action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
+        }
         _fall = SUPER_FALL;
+        [_mainCharacter runAction:action1 withKey:@"fall"];
+        
     }
     
-    [_mainCharacter runAction:action1 withKey:@"fall"];
+    _first=NO;
 }
 
 -(void)launch{
@@ -222,6 +228,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [_mainCharacter runAction:
      [SKAction repeatActionForever:[_mainCharacter flyAnimation]]
                       withKey:@"launch" ];
+    
+    
+    _speed = 30;
     
     SKAction *move = [SKAction moveTo:
                       CGPointMake(self.size.width, self.size.height/1.3)
@@ -247,9 +256,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     [_bullet runAction:sequenceShot];
   
-
-    
-
 }
 
 -(SKAction *)animation: (int)first
@@ -324,8 +330,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     if (mainPosition.x >= self.size.width  && !_parallaxIsOn) {
         
-        _speed = 50;
-        
         _parallax = [[PBParallaxScrolling alloc] initWithBackgrounds:_imageParallax
                                                                 size:self.size
                                                            direction:kPBParallaxBackgroundDirectionLeft
@@ -343,7 +347,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 -(void)moveLeft{
     
-    if (_speed) {
+    if (_speed && _parallaxIsOn) {
         if (_building) {
             _building.position = CGPointMake(_building.position.x - _speed, _building.position.y);
         }
@@ -360,8 +364,13 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             _mainCharacter.position = CGPointMake(_mainCharacter.position.x - _speed, _mainCharacter.position.y);
             
             
-            CGPoint velocity = CGPointNormalize(CGPointMake(0, -10));
+            CGPoint offset = CGPointSubtract(CGPointMake(self.size.width, _mainCharacter.position.y-200), _mainCharacter.position);
             
+            CGPoint direction = CGPointNormalize(offset);
+        
+            CGPoint velocity;
+            
+            velocity = CGPointMultiplyScalar(direction, _speed);
             
             [self rotateSprite:(SKSpriteNode*)_mainCharacter
                         toFace:velocity
