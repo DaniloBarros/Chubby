@@ -13,11 +13,10 @@
 
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
+#define SUPER_FALL 7
+#define NATURAL_FALL 0.4
 
-
-static const float SECOND_CHARACTER_MOVE_POINTS_PER_SEC = 50.0;
-
-static const CGFloat gravityY = -5.0;
+//static const CGFloat gravityY = -5.0;
 
 
 static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
@@ -35,7 +34,6 @@ static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
 static inline CGPoint CGPointMultiplyScalar(const CGPoint a, const CGFloat x){
     return CGPointMake(a.x * x, a.y * x);
 }
-
 static inline CGFloat CGPointLenght(const CGPoint a){
     return sqrt(a.x * a.x + a.y * a.y);
 }
@@ -49,9 +47,9 @@ static inline CGFloat CGPointToAgle(const CGPoint a){
     return atan2f(a.y, a.x);
 }
 
-static inline CGFloat CGPointDistance(const CGPoint a, const CGPoint b){
-    return sqrtf(powf(a.x - a.y, 2.0) + powf(b.x - b.y, 2.0));
-}
+//static inline CGFloat CGPointDistance(const CGPoint a, const CGPoint b){
+//    return sqrtf(powf(a.x - a.y, 2.0) + powf(b.x - b.y, 2.0));
+//}
 
 static inline CGFloat ScalarSign(CGFloat a){
     return a >= 0 ? 1 : -1;
@@ -71,7 +69,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     return angle;
 }
 
- 
 
 @implementation GameScene
 
@@ -100,6 +97,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     PBParallaxScrolling *_parallax;
     
     CGFloat _speed;
+    
+    CGFloat _fall;
+    
+    CGFloat _timeToNextShot;
     
 }
 
@@ -165,7 +166,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [self addChild:_ground];
         [self addChild:_mainCharacter];
         
-        //[self addChild:_enemy];
+        [self addChild:_enemy];
         
         _first = YES;
         
@@ -175,6 +176,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         _parallaxIsOn = NO;
 
         _speed = 0;
+
     }
     return self;
 }
@@ -207,14 +209,13 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
     }else{
         
-        
         if (![_mainCharacter actionForKey:@"preLaunch"]) {
     
             [_mainCharacter removeActionForKey:@"launch"];
             _mainCharacter.zRotation = 0;
             action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
         }
-        
+        _fall = SUPER_FALL;
         [_mainCharacter runAction:action1 withKey:@"fall"];
         
     }
@@ -236,7 +237,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                              duration:0.7];
     
     [_mainCharacter runAction:move];
-    
 }
 
 -(void)playShot{
@@ -290,11 +290,11 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     
     //UITouch *touch = [touches anyObject];
+        [self fall:_first];
     
-    [self fall:_first];
-    
-    
+
 }
+
 
 -(void)collisionCheck{
     
@@ -317,12 +317,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         
         [self launch];
+        _first=NO;
     }
     
     CGPoint mainPosition = _mainCharacter.position;
     
-    if (mainPosition.x >= self.size.width && !_parallaxIsOn) {
-        
+    if (mainPosition.x >= self.size.width  && !_parallaxIsOn) {
         
         _parallax = [[PBParallaxScrolling alloc] initWithBackgrounds:_imageParallax
                                                                 size:self.size
@@ -335,6 +335,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         _parallaxIsOn = YES;
         
     }
+    
     
 }
 
@@ -393,7 +394,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 - (void)update:(CFTimeInterval)currentTime {
-    
+
     if (_lastUpdatedTime) {
         _dt = currentTime - _lastUpdatedTime;
     }else{
@@ -404,14 +405,39 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     [self moveLeft];
     
-    [_parallax update:currentTime];
+    [self timeShotInterval: currentTime];
     
+    [_parallax update:currentTime];
+ 
+    if (!_first) {
+     [self gravityFall:_fall];
+    }
+    
+}
+
+-(void)timeShotInterval: (CFTimeInterval)currentTime{
+    
+    if (_timeToNextShot - currentTime <= 0 && _parallaxIsOn) {
+        
+        [self playShot];
+        
+        _timeToNextShot = ScalarRandomRange(5, 10);
+        
+        _timeToNextShot +=currentTime;
+    }
+
+
 }
 
 -(void) didEvaluateActions{
     
     [self collisionCheck];
     
+}
+
+-(void)gravityFall:(float)fallValue{
+    _mainCharacter.position = CGPointMake(_mainCharacter.position.x, _mainCharacter.position.y - (NATURAL_FALL+_fall));
+    //    _fall = 0;
 }
 
 
