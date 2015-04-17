@@ -18,7 +18,10 @@
 {
     MainCharacterNode *_mainCharacter;
     EnemyCharacterNode *_enemy;
+    
     SKSpriteNode *_trampoline;
+    SKSpriteNode *_bullet;
+
     
     SKAction *_mainAction;
     
@@ -74,11 +77,11 @@
         
         //add a enemy character
         _enemy = [EnemyCharacterNode initWithPosition:
-                  CGPointMake(self.size.width/8, self.size.height/8.5)];
+                  CGPointMake(self.size.width/20, self.size.height/10)];
         
         [self addChild:_enemy];
         
-        
+
         _first = YES;
         
     }
@@ -135,6 +138,28 @@
     
     [_mainCharacter runAction:move];
     
+}
+
+-(void)playShot{
+    
+    //add bullet
+    _bullet = [SKSpriteNode spriteNodeWithImageNamed:@"Bullet"];
+    _bullet.anchorPoint = CGPointZero;
+    _bullet.position = CGPointMake(_bullet.size.width*2.5-30, _bullet.size.height*2-20);
+    [_bullet setScale:0.4];
+    [self addChild:_bullet];
+
+
+    [_bullet runAction:[SKAction repeatActionForever:[_enemy playShotAnimation]]withKey:@"shot"];
+    
+    SKAction *shot = [SKAction moveTo:CGPointMake(self.size.width, self.size.width/1.1) duration:5];
+    SKAction *sequenceShot = [SKAction sequence:@[shot, [SKAction waitForDuration:50]]];
+    
+    [_bullet runAction:sequenceShot];
+  
+
+    
+
 }
 
 -(SKAction *)animation: (int)first
@@ -202,7 +227,7 @@
 
 - (void)update:(CFTimeInterval)currentTime {
     
-    _enemy.position = CGPointMake(_enemy.position.x + 2, _enemy.position.y);
+   // _enemy.position = CGPointMake(_enemy.position.x + 2, _enemy.position.y);
 
     [self collisionCheck];
     
