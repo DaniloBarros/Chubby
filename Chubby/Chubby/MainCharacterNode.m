@@ -84,9 +84,19 @@
         [textures addObject:texture];
     }
     
+    SKAction *leftWiggle = [SKAction rotateByAngle:M_PI_4/10 duration:0.3];
+    SKAction *middleWiggle = [leftWiggle reversedAction];
+    SKAction *rightWiggle = [SKAction rotateByAngle:-M_PI_4/10 duration:0.3];
+    SKAction *fullWiggle = [SKAction repeatActionForever:
+                            [SKAction sequence:@[leftWiggle,
+                                                 middleWiggle,
+                                                 rightWiggle,
+                                                 [rightWiggle reversedAction]]
+                             ]];
+    
     SKAction *action = [SKAction animateWithTextures:textures timePerFrame:0.2];
     
-    return action;
+    return [SKAction group:@[[SKAction repeatActionForever:action],fullWiggle]];
 }
 
 

@@ -33,7 +33,6 @@ static inline CGFloat roundFloatToTwoDecimalPlaces(CGFloat num) { return floorf(
 @interface PBParallaxScrolling ()
 
 /** The array containing the set of SKSpriteNode nodes representing the different backgrounds */
-@property (nonatomic, strong) NSArray * backgrounds;
 
 /** The array containing the set of duplicated background nodes that will appear when the background starts sliding out of the screen */
 @property (nonatomic, strong) NSArray * clonedBackgrounds;
