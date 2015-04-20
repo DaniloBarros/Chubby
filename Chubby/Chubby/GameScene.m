@@ -163,9 +163,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         _enemy = [EnemyCharacterNode initWithPosition:
                   CGPointMake(self.size.width/1.2, self.size.height/10)];
         
-        //add a item
-        _item = [ItensNode initWithPosition:CGPointMake(self.size.width/2, self.size.height/2)];
-        
         //Adding name to the bullet
         //add bullet
         _bullet = [SKSpriteNode spriteNodeWithImageNamed:@"Bullet"];
@@ -176,6 +173,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         _mainCharacter.name = @"Gordo";
         
+
         [self addChild:_building];
         [self addChild:_trampoline];
         [self addChild:_tree];
@@ -485,6 +483,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _mainCharacter.position = CGPointMake(_mainCharacter.position.x, _mainCharacter.position.y - (NATURAL_FALL+_fall));
     //    _fall = 0;
 }
+
 
 
 @end
