@@ -24,9 +24,9 @@ static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
     return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
 }
 
-static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
-    return CGPointMake(a.x + b.x, a.y + b.y);
-}
+//static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
+//    return CGPointMake(a.x + b.x, a.y + b.y);
+//}
 
 static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
     return CGPointMake(a.x - b.x, a.y - b.y);
@@ -81,6 +81,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     SKSpriteNode *_trampoline;
     SKSpriteNode *_bullet;
     SKSpriteNode *_bulletCollision;
+    SKSpriteNode *_bulletCopy;
 
     SKSpriteNode *_ground;
     SKSpriteNode *_tree;
@@ -117,7 +118,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         //add scenario game
         //add sky
-        SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"ceu1"];
+        SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"Sky"];
         bg.anchorPoint = CGPointZero;
         bg.position = CGPointZero;
         bg.zPosition = -1000;
@@ -135,25 +136,23 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
 
         //add building
-        _building = [SKSpriteNode spriteNodeWithImageNamed:@"predio1"];
+        _building = [SKSpriteNode spriteNodeWithImageNamed:@"predio"];
         _building.position = CGPointZero;
         _building.anchorPoint = CGPointZero;
         _building.zPosition = -999;
-        [_building setScale:0.5];
         
         
         //add trampoline
-        _trampoline = [SKSpriteNode spriteNodeWithImageNamed:@"trampolim0"];
+        _trampoline = [SKSpriteNode spriteNodeWithImageNamed:@"trampolim0000"];
         _trampoline.position = CGPointMake(self.size.width/3.5, self.size.height/4.5);
         [_trampoline setScale:0.6];
         _trampoline.zPosition = -998;
         
         
         //add tree
-        _tree = [SKSpriteNode spriteNodeWithImageNamed:@"arvore1"];
+        _tree = [SKSpriteNode spriteNodeWithImageNamed:@"Tree"];
         _tree.anchorPoint = CGPointMake(0.5, 0);
         _tree.position = CGPointMake(self.size.width*0.7, _ground.position.y);
-        [_tree setScale:0.45];
         _tree.zPosition = -997;
         
         
@@ -163,13 +162,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         _enemy = [EnemyCharacterNode initWithPosition:
                   CGPointMake(self.size.width/1.2, self.size.height/10)];
         
-        //Adding name to the bullet
         //add bullet
         _bullet = [SKSpriteNode spriteNodeWithImageNamed:@"Bullet"];
         _bullet.anchorPoint = CGPointZero;
-        _bullet.position = CGPointMake(_bullet.size.width*2.5-30, _bullet.size.height*2-20);
-        [_bullet setScale:1.0];
-        _bullet.name = @"Bala";
+        _bullet.position = CGPointMake(_bullet.size.width*10, _bullet.size.height*2);
+        [_bullet setScale:0.4];
+
         
         _mainCharacter.name = @"Gordo";
         
@@ -265,16 +263,14 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 -(void)playShot{
     
-    SKSpriteNode *bulletCopy = [_bullet copy];
-    [self addChild:bulletCopy];
-
-
-    [bulletCopy runAction:[SKAction repeatActionForever:[_enemy playShotAnimation]]withKey:@"shot"];
+    _bulletCopy = [_bullet copy];
+    [self addChild:_bulletCopy];
+    [_bulletCopy runAction:[SKAction repeatActionForever:[_enemy playShotAnimation]]withKey:@"shot"];
     
-    SKAction *shot = [SKAction moveTo:CGPointMake(self.size.width/5.5 , _mainCharacter.position.y ) duration:2];
-    SKAction *sequenceShot = [SKAction sequence:@[shot, [SKAction waitForDuration:50]]];
-    
-    [bulletCopy runAction:sequenceShot];
+    SKAction *shot = [SKAction moveTo:CGPointMake(self.size.width/5.5, _mainCharacter.position.y) duration:0.7];
+    SKAction *sequenceShot = [SKAction sequence:@[shot/*, [SKAction removeFromParent]*/]];
+
+    [_bulletCopy runAction:sequenceShot];
   
 }
 
@@ -336,32 +332,39 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void)collisionCheck{
     
     CGRect smallerFrame = CGRectInset(_trampoline.frame, 30, 30);
-    CGRect bulletFrame = CGRectInset(_bullet.frame, 30, 30);
-    
+    CGRect bulletFrame = CGRectInset(_bulletCopy.frame, 0, 0);
+   
     if (CGRectIntersectsRect(_mainCharacter.frame, smallerFrame)) {
         
         NSMutableArray *texture = [[NSMutableArray alloc] initWithObjects:
-                                   [SKTexture textureWithImageNamed:@"trampolim0"],
-                                   [SKTexture textureWithImageNamed:@"trampolim1"],
-                                   [SKTexture textureWithImageNamed:@"trampolim2"],
-                                   [SKTexture textureWithImageNamed:@"trampolim3"],
-                                   [SKTexture textureWithImageNamed:@"trampolim4"],
+                                   [SKTexture textureWithImageNamed:@"trampolim0000"],
+                                   [SKTexture textureWithImageNamed:@"trampolim0001"],
+                                   [SKTexture textureWithImageNamed:@"trampolim0002"],
+                                   [SKTexture textureWithImageNamed:@"trampolim0003"],
+                                   [SKTexture textureWithImageNamed:@"trampolim0004"],
                                    nil];
-        
+
         
         
         SKAction *actionTrampoline = [SKAction animateWithTextures:texture timePerFrame:0.03];
         [_trampoline runAction:actionTrampoline withKey:@"trampoline"];
         
-        
         [self launch];
         _first=NO;
     }
     
-    if (CGRectIntersectsRect(_mainCharacter.frame, bulletFrame)) {
-        _speed+= -1;
-        NSLog(@"aqui");
+    //verificar colisao
+
+    if(CGRectIntersectsRect(_mainCharacter.frame, bulletFrame)){
+      //  _speed--;
+        [_bulletCopy removeFromParent];
+        NSLog(@"colisao bala");
+    
     }
+    
+
+    
+    
     
     CGPoint mainPosition = _mainCharacter.position;
     
@@ -378,6 +381,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         _parallaxIsOn = YES;
         
+    }
+    
+    if(mainPosition.y <= 26.25){
+        _fall = 0;
+        _speed--;
+        [self launch];
     }
     
     
@@ -448,6 +457,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _lastUpdatedTime = currentTime;
     
     [self moveLeft];
+    [self addItems];
     
     [self timeShotInterval: currentTime];
     
@@ -459,13 +469,20 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
 }
 
+-(void)addItems{
+
+    _item = [ItensNode initWithPosition:CGPointMake(self.size.width/2 , ScalarRandomRange(0, 10))];
+
+
+}
+
 -(void)timeShotInterval: (CFTimeInterval)currentTime{
     
     if (_timeToNextShot - currentTime <= 0 && _parallaxIsOn) {
         
         [self playShot];
         
-        _timeToNextShot = ScalarRandomRange(5, 10);
+        _timeToNextShot = ScalarRandomRange(5, 9);
         
         _timeToNextShot +=currentTime;
     }
@@ -476,6 +493,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void) didEvaluateActions{
     
     [self collisionCheck];
+    [self addItems];
     
 }
 

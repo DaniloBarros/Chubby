@@ -11,29 +11,26 @@
 @implementation ItensNode
 
 +(id)initWithPosition: (CGPoint)position{
-
+    
     SKSpriteNode *_candy;
     SKSpriteNode *_frenchFries;
     SKSpriteNode *_iceCream;
     
     _candy = [self spriteNodeWithImageNamed:@"Candy"];
-    _candy.anchorPoint = CGPointZero;
-    _candy.position = CGPointMake(_candy.size.width/2, _candy.size.height/2);
-    
+    _candy.position = position;
     
     _frenchFries = [self spriteNodeWithImageNamed:@"FrenchFries"];
-    _frenchFries.anchorPoint = CGPointZero;
-    _frenchFries.position = CGPointMake(_frenchFries.size.width/2, _frenchFries.size.height/2);
+    _frenchFries.position = position;
     
     _iceCream = [self spriteNodeWithImageNamed:@"IceCream"];
-    _iceCream.anchorPoint = CGPointZero;
-    _iceCream.position = CGPointMake(_iceCream.size.width/2, _iceCream.size.height/2);
+    _iceCream.position = position;
     
-    [_candy addChild:_frenchFries];
-    [_candy addChild:_iceCream];
+    NSArray *_items = [ NSArray arrayWithObjects:_frenchFries, _iceCream, _candy, nil];
     
-    return _candy;
-
+    int selectItem = arc4random()%[_items count];
+    
+    
+    return _items[selectItem];
 
 }
 
