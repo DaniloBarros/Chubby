@@ -103,6 +103,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     CGFloat _timeToNextShot;
     
+    CGPoint _inicio;
+    
 }
 
 -(id)initWithSize:(CGSize)size{
@@ -159,8 +161,16 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         _enemy = [EnemyCharacterNode initWithPosition:
                   CGPointMake(self.size.width/20, self.size.height/10)];
         
+        //Adding name to the bullet
+        //add bullet
+        _bullet = [SKSpriteNode spriteNodeWithImageNamed:@"Bullet"];
+        _bullet.anchorPoint = CGPointZero;
+        _bullet.position = CGPointMake(_bullet.size.width*2.5-30, _bullet.size.height*2-20);
+        [_bullet setScale:1.0];
+        _bullet.name = @"Bala";
         
-
+        _mainCharacter.name = @"Gordo";
+        
         [self addChild:_building];
         [self addChild:_trampoline];
         [self addChild:_tree];
@@ -201,7 +211,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             float xOff = (_impulse/26) * (_impulse/26) * fraction;
             
             node.position = CGPointMake(node.position.x + xOff, characterPos.y + yOff);
-            
+
         }];
         
         action1 = [SKAction group:@[jump,[_mainCharacter fallAnimation]]];
@@ -226,26 +236,32 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     SKAction *move = [SKAction moveTo:
                       CGPointMake(self.size.width, self.size.height/1.3)
                              duration:0.7];
+
+//Fazer parabola
+//    UIBezierPath *path = [[UIBezierPath alloc]init];
+//    [path moveToPoint:CGPointZero];
+//    CGPoint ponto = CGPointMake(self.size.width - _mainCharacter.position.x, self.size.height/1.3 - _mainCharacter.position.y);
+//    [path addQuadCurveToPoint:ponto controlPoint:CGPointSubtract(ponto, CGPointMake(100, -10))];
+//    [_mainCharacter runAction:[SKAction followPath:path.CGPath duration:5]];
+
+    
     
     [_mainCharacter runAction:move];
+
 }
 
 -(void)playShot{
     
-    //add bullet
-    _bullet = [SKSpriteNode spriteNodeWithImageNamed:@"Bullet"];
-    _bullet.anchorPoint = CGPointZero;
-    _bullet.position = CGPointMake(_bullet.size.width*2.5-30, _bullet.size.height*2-20);
-    [_bullet setScale:0.4];
-    [self addChild:_bullet];
+    SKSpriteNode *bulletCopy = [_bullet copy];
+    [self addChild:bulletCopy];
 
 
-    [_bullet runAction:[SKAction repeatActionForever:[_enemy playShotAnimation]]withKey:@"shot"];
+    [bulletCopy runAction:[SKAction repeatActionForever:[_enemy playShotAnimation]]withKey:@"shot"];
     
     SKAction *shot = [SKAction moveTo:CGPointMake(self.size.width, self.size.width/1.1) duration:5];
     SKAction *sequenceShot = [SKAction sequence:@[shot, [SKAction waitForDuration:50]]];
     
-    [_bullet runAction:sequenceShot];
+    [bulletCopy runAction:sequenceShot];
   
 
     
@@ -275,18 +291,35 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     }
     SKAction *action = [SKAction animateWithTextures:textures timePerFrame:duration];
     
-    
-    
     return action;
 }
 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     
-    //UITouch *touch = [touches anyObject];
-        [self fall:_first];
-    
+    [self fall:_first];
+//    Sair com o tap
+//    for (UITouch *touche in touches) {
+//        _inicio = [touche locationInNode:self];
+//        SKSpriteNode *node = (SKSpriteNode*)[self nodeAtPoint:_inicio];
+//        if ([node.name isEqualToString:@"Bala"]) {
+//            [node removeFromParent];
+//        }
+//    }
+}
 
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
+//    UITouch *touche = [touches anyObject];
+//    _inicio = [touche locationInNode:self];
+    for (UITouch *touche in touches) {
+        CGPoint final = [touche locationInNode:self];
+        CGPoint resultado = CGPointMake((final.x+_inicio.x)/2 , (final.y+_inicio.y)/2);
+        SKSpriteNode *node = (SKSpriteNode*)[self nodeAtPoint:resultado];//Pega o node na posição que é mandando
+        if ([node.name isEqualToString:@"Bala"]) {
+            [node removeFromParent];
+        }
+    }
+    
 }
 
 

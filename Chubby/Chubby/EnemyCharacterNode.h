@@ -10,6 +10,7 @@
 
 @interface EnemyCharacterNode : SKSpriteNode
 
+
 +(id)initWithPosition: (CGPoint)position;
 -(SKAction *)playShotAnimation;
 
