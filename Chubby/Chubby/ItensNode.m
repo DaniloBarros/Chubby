@@ -18,6 +18,7 @@
     
     _candy = [self spriteNodeWithImageNamed:@"Candy"];
     _candy.position = position;
+    _candy.name = @"Candy";
     
     _frenchFries = [self spriteNodeWithImageNamed:@"FrenchFries"];
     _frenchFries.position = position;
@@ -28,10 +29,10 @@
     NSArray *_items = [ NSArray arrayWithObjects:_frenchFries, _iceCream, _candy, nil];
     
     int selectItem = arc4random()%[_items count];
-    
-    
+        
     return _items[selectItem];
 
 }
+
 
 @end

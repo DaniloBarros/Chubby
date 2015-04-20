@@ -106,6 +106,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     CGFloat _timeToNextShot;
     
+    CGFloat _timeToNextItem;
+    
 }
 
 -(id)initWithSize:(CGSize)size{
@@ -325,12 +327,26 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         _first=NO;
     }
     
+    
+    [self enumerateChildNodesWithName:@"items" usingBlock:^(SKNode *node, BOOL *stop){
+        
+        SKSpriteNode *item = (SKSpriteNode *)node;
+        item.position = CGPointMake(item.position.x - _speed, item.position.y);
+        
+        
+        if(CGRectIntersectsRect(item.frame, _mainCharacter.frame)){
+            [item removeAllActions];
+            [item removeFromParent];
+            NSLog(@"Bateu no item");
+        }
+    }];
+    
     //verificar colisao
 
     if(CGRectIntersectsRect(_mainCharacter.frame, bulletFrame)){
       //  _speed--;
         [_bulletCopy removeFromParent];
-        NSLog(@"colisao bala");
+       // NSLog(@"colisao bala");
     
     }
     
@@ -349,7 +365,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                                     andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
         
         [self addChild:_parallax];
-        [self addChild:_item];
         
         _parallaxIsOn = YES;
         
@@ -395,7 +410,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                         toFace:velocity
             rotateRadiasPerSec:M_PI_4
                          speed:velocity];
+            
         }
+        
     }
 }
 
@@ -420,6 +437,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 - (void)update:(CFTimeInterval)currentTime {
 
+    
     if (_lastUpdatedTime) {
         _dt = currentTime - _lastUpdatedTime;
     }else{
@@ -429,9 +447,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _lastUpdatedTime = currentTime;
     
     [self moveLeft];
-    [self addItems];
     
-    [self timeShotInterval: currentTime];
+    [self timeShotInterval:currentTime];
+    
+    [self timeItemInterval: currentTime];
     
     [_parallax update:currentTime];
  
@@ -439,12 +458,33 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
      [self gravityFall:_fall];
     }
     
+    
+    
 }
 
 -(void)addItems{
+    
+    
+    CGFloat range = ScalarRandomRange(30, 90);
+    
+    _item = [ItensNode initWithPosition:CGPointMake(self.size.width,
+                                                    self.size.height*(range/100))];
+    _item.name = @"items";
+    
+    [self addChild:_item];
+    
+}
 
-    _item = [ItensNode initWithPosition:CGPointMake(self.size.width/2 , ScalarRandomRange(0, 10))];
-
+-(void)timeItemInterval: (CFTimeInterval)currentTime{
+    
+    if(_timeToNextItem - currentTime <= 0 && _parallaxIsOn){
+        
+        for (int cont = ScalarRandomRange(1, 3); cont>=0; cont--) {
+            [self addItems];
+        }
+        _timeToNextItem = ScalarRandomRange(1, 3);
+        _timeToNextItem+= currentTime;
+    }
 
 }
 
@@ -465,8 +505,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void) didEvaluateActions{
     
     [self collisionCheck];
-    [self addItems];
-    
 }
 
 -(void)gravityFall:(float)fallValue{

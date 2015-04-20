@@ -11,6 +11,7 @@
 @interface ItensNode : SKSpriteNode
 
 +(id)initWithPosition: (CGPoint)position;
+//-(SKAction *)itemAnimation;
 
 
 @end
