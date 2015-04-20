@@ -355,6 +355,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
     }
     
+    if(mainPosition.y <= 26.25){
+        _fall = 0;
+        _speed--;
+        [self launch];
+    }
+    
     
 }
 
