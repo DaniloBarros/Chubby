@@ -17,16 +17,18 @@
 #define SUPER_FALL 7
 #define NATURAL_FALL 0.4
 
-//static const CGFloat gravityY = -5.0;
+static const CGPoint gravity(){
+    return CGPointMake(0, -1);
+}
 
 
 static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
     return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
 }
 
-//static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
-//    return CGPointMake(a.x + b.x, a.y + b.y);
-//}
+static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
+    return CGPointMake(a.x + b.x, a.y + b.y);
+}
 
 static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
     return CGPointMake(a.x - b.x, a.y - b.y);
@@ -91,6 +93,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     BOOL _first, _parallaxIsOn;
     
+    BOOL _isImmune;
+    
     CGFloat _impulse;
     CGFloat _impulsePlus;
     
@@ -101,6 +105,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     PBParallaxScrolling *_parallax;
     
     CGFloat _speed;
+    CGVector _force;
     
     CGFloat _fall;
     
@@ -143,7 +148,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                @"arvoreParallax@2x",
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
-            _speed = 0;
+            _speed = 30;
+            _force = CGVectorMake(0, -gravity().y);
+            _isImmune = NO;
             
         }
         return self;
@@ -179,11 +186,20 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _first=NO;
 }
 
+-(void)applyForce:(CGFloat) dx dy:(CGFloat) dy{
+    _force = CGVectorMake(_force.dx + dx, _force.dy + dy);
+}
+
+-(void)immunity:(BOOL)immune{
+    _isImmune = immune;
+}
 
 //Make him fall fast
 -(void)tapInChubby{
     SKAction *action1;
     action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
+    [_mainCharacter runAction:action1];
+    [self applyForce: 0 dy:-7];
     _fall = SUPER_FALL;
 }
 
@@ -230,12 +246,14 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
      [SKAction repeatActionForever:[_mainCharacter flyAnimation]]
                       withKey:@"launch" ];
     
-    _speed = 30;
+    /*_speed = 30;
     SKAction *move = [SKAction moveTo:
                       CGPointMake(self.size.width, self.size.height/1.3)
                              duration:0.7];
     
-    [_mainCharacter runAction:move];
+    [_mainCharacter runAction:move];*/
+    
+    [self applyForce:3 dy:3];
 
 }
 
@@ -301,6 +319,25 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     }
 }
 
+-(void)blinkSprite:(SKSpriteNode *)sprite
+        blinkTimes:(float)blinkTimes
+     blinkDuration:(float)blinkDuration{
+    
+    SKAction *blinkAction = [SKAction customActionWithDuration:blinkDuration
+                                                   actionBlock:^(SKNode *node, CGFloat elapsedTime){
+                                                       float slice = blinkDuration / blinkTimes;
+                                                       float remainder = fmodf(elapsedTime, slice);
+                                                       node.hidden = remainder > slice / 2;
+                                                   }];
+    SKAction *notHidden = [SKAction customActionWithDuration:0
+                                                 actionBlock:^(SKNode *node, CGFloat elapsedTime){
+                                                     node.hidden = NO;
+                                                     _isImmune = NO;
+                                                 }];
+    [sprite runAction:[SKAction sequence:@[blinkAction, notHidden]]];
+    
+}
+
 -(void)collisionCheck{
     
     CGRect smallerFrame = CGRectInset(_trampoline.frame, 30, 30);
@@ -322,25 +359,34 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [_trampoline runAction:actionTrampoline withKey:@"trampoline"];
         
         [self launch];
-        _first=NO;
+
     }
     
-    //verificar colisao
+    //Bullet Collision
 
     if(CGRectIntersectsRect(_mainCharacter.frame, bulletFrame)){
-      //  _speed--;
-        [_bulletCopy removeFromParent];
-        NSLog(@"colisao bala");
-    
+        if (!_isImmune) {
+            
+            [self immunity:YES];
+            [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
+            
+            [_bulletCopy removeFromParent];
+            NSLog(@"colisao bala");
+            
+            if((_speed-4)>0)
+                _speed -= 4;
+            else
+                _speed = 0;
+            
+            [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
+        }
     }
     
-
-    
-    
+    //Main Character Collisions
     
     CGPoint mainPosition = _mainCharacter.position;
     
-    if (mainPosition.x >= self.size.width  && !_parallaxIsOn) {
+    if ([_mainCharacter actionForKey:@"launch"]  && !_parallaxIsOn) {
         
         _parallax = [[PBParallaxScrolling alloc] initWithBackgrounds:_imageParallax
                                                                 size:self.size
@@ -349,16 +395,45 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                                     andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
         
         [self addChild:_parallax];
-        [self addChild:_item];
         
         _parallaxIsOn = YES;
         
     }
     
+    //Hit the Ground
     if(mainPosition.y <= 26.25){
-        _fall = 0;
-        _speed--;
-        [self launch];
+        
+        _mainCharacter.position = CGPointMake(_mainCharacter.position.x, 26.25);
+        SKAction *flyBack = [SKAction repeatActionForever:[_mainCharacter flyAnimation]];
+        [_mainCharacter runAction:flyBack];
+        
+        [self applyForce:0 dy:_speed/3];
+        
+        if (!_isImmune) {
+            [self immunity:YES];
+            [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
+            if((_speed-2)>0)
+                _speed -= 2;
+            else
+                _speed = 0;
+            
+            _fall = 0;
+            [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
+        }
+        //[self launch];
+    }
+    
+    //Hit the Sky
+    if (mainPosition.y >= self.size.height - _mainCharacter.size.height + 5) {
+        _force.dy = 0;
+    }
+    
+    //Pass the fixed Position in X axys
+    if (mainPosition.x > self.size.width/5.5 && _parallaxIsOn) {
+        _force.dx = -1;
+    }else if(mainPosition.x <= self.size.width/5.5 && _parallaxIsOn){
+        _force.dx = 0;
+        _mainCharacter.position = CGPointMake(self.size.width/5.5, _mainCharacter.position.y);
     }
     
     
@@ -378,7 +453,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         }
         if (_tree) {
             _tree.position = CGPointMake(_tree.position.x - _speed, _tree.position.y);
-        }
+        }/*
         if (_mainCharacter && _mainCharacter.position.x >= self.size.width/5.5) {
             _mainCharacter.position = CGPointMake(_mainCharacter.position.x - _speed, _mainCharacter.position.y);
             
@@ -395,7 +470,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                         toFace:velocity
             rotateRadiasPerSec:M_PI_4
                          speed:velocity];
-        }
+        }*/
     }
 }
 
@@ -428,17 +503,38 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     _lastUpdatedTime = currentTime;
     
+    if (_speed==0) {
+        [_mainCharacter removeAllActions];
+        _force = CGVectorMake(0, -gravity().y);
+        NSLog(@"Game Over");
+    }
+    
     [self moveLeft];
     [self addItems];
     
     [self timeShotInterval: currentTime];
     
     [_parallax update:currentTime];
- 
+    
+    /*Move Main in Y axis
+    CGPoint velocity = CGPointMake(_force.dx, _force.dy);
+    CGPoint amountDt = CGPointMultiplyScalar(velocity, _dt);
+    CGPoint amountToMove = CGPointAdd(amountDt, gravity());
+    */
+    
+    _mainCharacter.position = CGPointMake(_mainCharacter.position.x + _force.dx, _mainCharacter.position.y + (_force.dy + gravity().y));
+    
+    NSLog(@"%lf",_speed);
+    
+    //CGPointAdd(_mainCharacter.position, amountToMove);
+    
+    //CGPointMake(_mainCharacter.position.x, _mainCharacter.position.y + (_force + gravityY));
+    
+    /*
     if (!_first) {
      [self gravityFall:_fall];
     }
-    
+    */
 }
 
 -(void)addItems{
@@ -511,6 +607,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _mainCharacter = [MainCharacterNode initWithPosition:
                       CGPointMake(self.size.width/5.5, self.size.height*0.7)];
     _mainCharacter.name = @"chubby";
+    
     [self addChild:_mainCharacter];
     
 }
