@@ -18,21 +18,28 @@
     
     _tank = [self spriteNodeWithImageNamed:@"Tank"];
     _tank.anchorPoint = CGPointZero;
-    _tank.position = position;
+    _tank.position =CGPointMake(_tank.size.width*1.8, _tank.size.height*0.2);
+    
     [_tank setScale:0.3];
     
     _enemyHead = [self spriteNodeWithImageNamed:@"HeadSkinny"];
     _enemyHead.anchorPoint = CGPointZero;
-    _enemyHead.position = CGPointMake(_enemyHead.size.width*0.9 , _enemyHead.size.height*0.55);
-    [_enemyHead setScale:0.8];
-    
-    _wheel = [self spriteNodeWithImageNamed:@"Wheel"];
-    _wheel.anchorPoint = CGPointZero;
-    _wheel.position = CGPointMake(_wheel.size.width*(-0.08), _wheel.size.height*(-0.5));
-    [_wheel setScale:1.3];
     
     [_tank addChild:_enemyHead];
+
+    _enemyHead.position = CGPointMake(_enemyHead.size.width*1.9 , _enemyHead.size.height*0.55);
+    [_enemyHead setScale:0.8];
+    
+    
+    _wheel = [self spriteNodeWithImageNamed:@"Wheel"];
+    _wheel.anchorPoint = CGPointMake(0.2, 0);
+    
     [_tank addChild:_wheel];
+    
+    _wheel.position = CGPointMake(_wheel.size.width/2, -_wheel.size.height/2);
+    [_wheel setScale:1.3];
+    
+    
     
     
     return _tank;
@@ -42,14 +49,14 @@
     
     NSMutableArray *textures = [[NSMutableArray alloc] init];
 
-    for (int i=0; i<6; i++) {
+    for (int i=6; i>0; i--) {
         
         NSString *name = [NSString stringWithFormat:@"Bullet"];
         SKTexture *texture = [SKTexture textureWithImageNamed:name];
         [textures addObject:texture];
     }
     
-    for (int i=6; i>0; i--) {
+    for (int i=0; i<6; i++) {
         NSString *name = [NSString stringWithFormat:@"Bullet"];
         SKTexture *texture = [SKTexture textureWithImageNamed:name];
         [textures addObject:texture];
