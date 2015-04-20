@@ -108,89 +108,45 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     CGPoint _inicio;
     
+    SKSpriteNode *_pause;
+    SKSpriteNode *_play;
+    SKSpriteNode *_selectedNode;
+    
+    SKShapeNode *_pauseScreen;
 }
 
 -(id)initWithSize:(CGSize)size{
-    
-    if(self = [super initWithSize:size]){
         
-        //self.backgroundColor = [SKColor whiteColor];
-        
-        //add scenario game
-        //add sky
-        SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"Sky"];
-        bg.anchorPoint = CGPointZero;
-        bg.position = CGPointZero;
-        bg.zPosition = -1000;
-        [self addChild:bg];
-        
-        //add MainCharacter
-        _mainCharacter = [MainCharacterNode initWithPosition:
-                          CGPointMake(self.size.width/5.5, self.size.height*0.7)];
-        
-        //add ground
-        _ground = [SKSpriteNode spriteNodeWithImageNamed:@"chaoParallax@2x"];
-        _ground.anchorPoint = CGPointMake(0, .07);
-        _ground.position = CGPointMake(0, _ground.size.height*.07);
-        _ground.zPosition = -996;
-        
-
-        //add building
-        _building = [SKSpriteNode spriteNodeWithImageNamed:@"predio"];
-        _building.position = CGPointZero;
-        _building.anchorPoint = CGPointZero;
-        _building.zPosition = -999;
-        
-        
-        //add trampoline
-        _trampoline = [SKSpriteNode spriteNodeWithImageNamed:@"trampolim0000"];
-        _trampoline.position = CGPointMake(self.size.width/3.5, self.size.height/4.5);
-        [_trampoline setScale:0.6];
-        _trampoline.zPosition = -998;
-        
-        
-        //add tree
-        _tree = [SKSpriteNode spriteNodeWithImageNamed:@"Tree"];
-        _tree.anchorPoint = CGPointMake(0.5, 0);
-        _tree.position = CGPointMake(self.size.width*0.7, _ground.position.y);
-        _tree.zPosition = -997;
-        
-        
-        _impulsePlus = 0;
-        
-        //add a enemy character
-        _enemy = [EnemyCharacterNode initWithPosition:
-                  CGPointMake(self.size.width/1.2, self.size.height/10)];
-        
-        //add bullet
-        _bullet = [SKSpriteNode spriteNodeWithImageNamed:@"Bullet"];
-        _bullet.anchorPoint = CGPointZero;
-        _bullet.position = CGPointMake(_bullet.size.width*10, _bullet.size.height*2);
-        [_bullet setScale:0.4];
-
-        
-        _mainCharacter.name = @"Gordo";
-        
-
-        [self addChild:_building];
-        [self addChild:_trampoline];
-        [self addChild:_tree];
-        [self addChild:_ground];
-        [self addChild:_mainCharacter];
-        
-        [self addChild:_enemy];
-        
-        _first = YES;
-        
-        _imageParallax = @[@"chaoParallax@2x",
-                           @"arvoreParallax@2x",
-                           @"NuvemParallax@2x"];
-        _parallaxIsOn = NO;
-
-        _speed = 0;
-
-    }
-    return self;
+        if(self = [super initWithSize:size]){
+            //add scenario game
+            [self addScenario];
+            //add MainCharacter
+            [self addMainCharacter];
+            //add ground
+            [self addGround];
+            //add building
+            [self addBuilding];
+            //add trampoline
+            [self addTrampoline];
+            //add tree
+            [self addTree];
+            //AdicionaBala
+            [self addBullet];
+            //Add Pause
+            [self pauseNode];
+            //Add Enemy
+            [self addEnemy];
+            
+            _impulsePlus = 0;
+            _first = YES;
+            _imageParallax = @[@"chaoParallax@2x",
+                               @"arvoreParallax@2x",
+                               @"NuvemParallax@2x"];
+            _parallaxIsOn = NO;
+            _speed = 0;
+            
+        }
+        return self;
 }
 
 -(void)fall:(BOOL)jump{
@@ -219,20 +175,53 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         [_mainCharacter runAction:action1 withKey:@"preLaunch"];
         
-    }else{
-        
-        if (![_mainCharacter actionForKey:@"preLaunch"]) {
-    
-            [_mainCharacter removeActionForKey:@"launch"];
-            _mainCharacter.zRotation = 0;
-            action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
+    }
+    _first=NO;
+}
+
+
+//Make him fall fast
+-(void)tapInChubby{
+    SKAction *action1;
+    action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
+    _fall = SUPER_FALL;
+}
+
+
+//Play and Pause actions
+-(void) playAction{
+    // [self pauseNode];//Tem que retirar a imagem do pause na hora que ele para o jogo
+    [_pauseScreen removeFromParent];
+    [_play removeFromParent];
+}
+
+
+-(void) pauseAction{
+    self.paused = YES;
+    [_pause removeFromParent];;//Why isn't working??
+    _pauseScreen = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(self.frame.size.width, self.frame.size.height)];
+    //Seta cor
+    _pauseScreen.fillColor = [SKColor colorWithRed:0.98 green:0.90 blue:0.55 alpha:0.8];
+    [self addChild:_pauseScreen];
+    _pauseScreen.position = CGPointMake(self.size.width/2, self.size.height/2);
+    _play = [SKSpriteNode spriteNodeWithImageNamed:@"PlaySimbol"];
+    [_play setName:@"play"];
+    [_play setAnchorPoint:CGPointZero];
+    [_play setScale:0.1]; //0.05
+    [_play setPosition:CGPointMake(0 - _play.size.width/2,0)];
+    [_pauseScreen addChild:_play];
+}
+
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
+    for (UITouch *touche in touches) {
+        CGPoint final = [touche locationInNode:self];
+        CGPoint resultado = CGPointMake((final.x+_inicio.x)/2 , (final.y+_inicio.y)/2);
+        SKSpriteNode *node = (SKSpriteNode*)[self nodeAtPoint:resultado];//Pega o node na posição que é mandando
+        if ([node.name isEqualToString:@"bullet"]) {
+            [node removeFromParent];
         }
-        _fall = SUPER_FALL;
-        [_mainCharacter runAction:action1 withKey:@"fall"];
-        
     }
     
-    _first=NO;
 }
 
 -(void)launch{
@@ -241,21 +230,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
      [SKAction repeatActionForever:[_mainCharacter flyAnimation]]
                       withKey:@"launch" ];
     
-    
     _speed = 30;
-    
     SKAction *move = [SKAction moveTo:
                       CGPointMake(self.size.width, self.size.height/1.3)
                              duration:0.7];
-
-//Fazer parabola
-//    UIBezierPath *path = [[UIBezierPath alloc]init];
-//    [path moveToPoint:CGPointZero];
-//    CGPoint ponto = CGPointMake(self.size.width - _mainCharacter.position.x, self.size.height/1.3 - _mainCharacter.position.y);
-//    [path addQuadCurveToPoint:ponto controlPoint:CGPointSubtract(ponto, CGPointMake(100, -10))];
-//    [_mainCharacter runAction:[SKAction followPath:path.CGPath duration:5]];
-
-    
     
     [_mainCharacter runAction:move];
 
@@ -302,32 +280,26 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    
-    [self fall:_first];
-//    Sair com o tap
-//    for (UITouch *touche in touches) {
-//        _inicio = [touche locationInNode:self];
-//        SKSpriteNode *node = (SKSpriteNode*)[self nodeAtPoint:_inicio];
-//        if ([node.name isEqualToString:@"Bala"]) {
-//            [node removeFromParent];
-//        }
-//    }
-}
-
--(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-//    UITouch *touche = [touches anyObject];
-//    _inicio = [touche locationInNode:self];
-    for (UITouch *touche in touches) {
-        CGPoint final = [touche locationInNode:self];
-        CGPoint resultado = CGPointMake((final.x+_inicio.x)/2 , (final.y+_inicio.y)/2);
-        SKSpriteNode *node = (SKSpriteNode*)[self nodeAtPoint:resultado];//Pega o node na posição que é mandando
-        if ([node.name isEqualToString:@"Bala"]) {
-            [node removeFromParent];
+    if (_first) {
+        [self fall:_first];
+    }else{
+        //Tap actions
+        for (UITouch *touche in touches) {
+            _inicio = [touche locationInNode:self];
+            SKSpriteNode *node = (SKSpriteNode*)[self nodeAtPoint:_inicio];
+            if([node.name isEqualToString:@"pause"]){
+                [self pauseAction];
+            }
+            if([node.name isEqualToString:@"chubby"]){
+                [self tapInChubby];
+            }
+            if ([node.name isEqualToString:@"play"]) {
+                [self playAction];
+                self.paused = NO;
+            }
         }
     }
-    
 }
-
 
 -(void)collisionCheck{
     
@@ -502,6 +474,92 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     //    _fall = 0;
 }
 
+
+
+
+
+
+
+//Adding Images
+
+-(void)pauseNode{
+    _pause = [SKSpriteNode spriteNodeWithImageNamed:@"Pause_icon_status"];
+    _pause.position = CGPointMake(self.size.width/1.1, self.size.height/1.13);
+    _pause.name = @"pause";
+    [_pause setScale:0.13];
+    
+    [self addChild:_pause];
+}
+
+-(void)addScenario{
+    //add sky
+    SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"Sky"];
+    bg.anchorPoint = CGPointZero;
+    bg.position = CGPointZero;
+    bg.zPosition = -1000;
+    [self addChild:bg];
+}
+
+
+-(void)addEnemy{
+    _enemy = [EnemyCharacterNode initWithPosition:
+              CGPointMake(self.size.width/20, self.size.height/10)];
+    [self addChild:_enemy];
+}
+
+-(void)addMainCharacter{
+    _mainCharacter = [MainCharacterNode initWithPosition:
+                      CGPointMake(self.size.width/5.5, self.size.height*0.7)];
+    _mainCharacter.name = @"chubby";
+    [self addChild:_mainCharacter];
+    
+}
+
+-(void)addGround{
+    _ground = [SKSpriteNode spriteNodeWithImageNamed:@"chaoParallax@2x"];
+    _ground.anchorPoint = CGPointMake(0, .07);
+    _ground.position = CGPointMake(0, _ground.size.height*.07);
+    _ground.zPosition = -996;
+    [self addChild:_ground];
+}
+
+-(void)addBuilding{
+    _building = [SKSpriteNode spriteNodeWithImageNamed:@"Building"];
+    _building.position = CGPointZero;
+    _building.anchorPoint = CGPointZero;
+    _building.zPosition = -999;
+    //   [_building setScale:0.5];
+    
+    [self addChild:_building];
+}
+
+-(void)addTrampoline{
+    _trampoline = [SKSpriteNode spriteNodeWithImageNamed:@"trampolim0000"];
+    _trampoline.position = CGPointMake(self.size.width/3.5, self.size.height/4.5);
+    [_trampoline setScale:0.6];
+    _trampoline.zPosition = -998;
+    [self addChild:_trampoline];
+}
+
+-(void)addBullet{
+    //Adding name to the bullet
+    //add bullet
+    _bullet = [SKSpriteNode spriteNodeWithImageNamed:@"Bullet"];
+    _bullet.anchorPoint = CGPointZero;
+    _bullet.position = CGPointMake(_bullet.size.width*10, _bullet.size.height*2);
+    [_bullet setScale:0.4];
+    _bullet.name = @"bullet";
+    
+}
+
+-(void)addTree{
+    _tree = [SKSpriteNode spriteNodeWithImageNamed:@"Tree"];
+    _tree.anchorPoint = CGPointMake(0.5, 0);
+    _tree.position = CGPointMake(self.size.width*0.7, _ground.position.y);
+    //[_tree setScale:0.45];
+    _tree.zPosition = -997;
+    [self addChild:_tree];
+}
 
 
 @end
