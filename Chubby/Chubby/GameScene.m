@@ -11,6 +11,7 @@
 #import "EnemyCharacterNode.h"
 #import "PBParallaxScrolling.h"
 #import "ItensNode.h"
+#import "GameViewController.h"
 
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
@@ -18,7 +19,6 @@
 #define NATURAL_FALL 0.4
 
 //static const CGFloat gravityY = -5.0;
-
 
 static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
     return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
@@ -110,9 +110,14 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     SKSpriteNode *_pause;
     SKSpriteNode *_play;
+    SKSpriteNode *_musicButton;
     SKSpriteNode *_selectedNode;
     
     SKShapeNode *_pauseScreen;
+    
+    AVAudioPlayer *_audio;
+
+    SKSpriteNode *_backgroundPaused;
 }
 
 -(id)initWithSize:(CGSize)size{
@@ -136,7 +141,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             [self pauseNode];
             //Add Enemy
             [self addEnemy];
-            
+            //AddMusic
+            //[self addMusic];
             _impulsePlus = 0;
             _first = YES;
             _imageParallax = @[@"chaoParallax@2x",
@@ -144,6 +150,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
             _speed = 0;
+            
+            
             
         }
         return self;
@@ -187,29 +195,11 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _fall = SUPER_FALL;
 }
 
-
-//Play and Pause actions
--(void) playAction{
-    // [self pauseNode];//Tem que retirar a imagem do pause na hora que ele para o jogo
-    [_pauseScreen removeFromParent];
-    [_play removeFromParent];
-}
-
-
--(void) pauseAction{
-    self.paused = YES;
-    [_pause removeFromParent];;//Why isn't working??
-    _pauseScreen = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(self.frame.size.width, self.frame.size.height)];
-    //Seta cor
-    _pauseScreen.fillColor = [SKColor colorWithRed:0.98 green:0.90 blue:0.55 alpha:0.8];
-    [self addChild:_pauseScreen];
-    _pauseScreen.position = CGPointMake(self.size.width/2, self.size.height/2);
-    _play = [SKSpriteNode spriteNodeWithImageNamed:@"PlaySimbol"];
-    [_play setName:@"play"];
-    [_play setAnchorPoint:CGPointZero];
-    [_play setScale:0.1]; //0.05
-    [_play setPosition:CGPointMake(0 - _play.size.width/2,0)];
-    [_pauseScreen addChild:_play];
+-(void)actionEverythingUnFocus{
+    _mainCharacter.zPosition = -1;
+    _enemy.zPosition = -1;
+    _bullet.zPosition = -1;
+    _item.zPosition = -1;
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -431,35 +421,27 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [self moveLeft];
     [self addItems];
     
-    [self timeShotInterval: currentTime];
-    
-    [_parallax update:currentTime];
- 
-    if (!_first) {
-     [self gravityFall:_fall];
+    //If the game is paused, everything stop
+    if (self.paused == NO) {
+        [self timeShotInterval: currentTime];
+        [_parallax update:currentTime];
+        if (!_first) {
+            [self gravityFall:_fall];
+        }
     }
     
 }
 
 -(void)addItems{
-
     _item = [ItensNode initWithPosition:CGPointMake(self.size.width/2 , ScalarRandomRange(0, 10))];
-
-
 }
 
 -(void)timeShotInterval: (CFTimeInterval)currentTime{
-    
     if (_timeToNextShot - currentTime <= 0 && _parallaxIsOn) {
-        
         [self playShot];
-        
         _timeToNextShot = ScalarRandomRange(5, 9);
-        
         _timeToNextShot +=currentTime;
     }
-
-
 }
 
 -(void) didEvaluateActions{
@@ -476,11 +458,24 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 
+//Future Good Methods
+-(void)stopMusic{
+    [_audio pause];
+}
 
-
+-(void)playMusic{
+    [_audio play];
+}
 
 
 //Adding Images
+
+-(void)addMusic{
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"FlyingTheme" ofType:@"mp3"]];
+    _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    _audio.numberOfLoops = -1;
+    [_audio play];
+}
 
 -(void)pauseNode{
     _pause = [SKSpriteNode spriteNodeWithImageNamed:@"Pause_icon_status"];
@@ -498,6 +493,13 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     bg.position = CGPointZero;
     bg.zPosition = -1000;
     [self addChild:bg];
+}
+
+-(void)addBackgroundPaused{
+    _backgroundPaused = [SKSpriteNode spriteNodeWithImageNamed:@"Sky"];
+    _backgroundPaused.position = CGPointMake(self.size.width/2, self.size.height/2);
+    [_backgroundPaused setScale:0.4];
+    [self addChild:_backgroundPaused];
 }
 
 
@@ -561,5 +563,46 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [self addChild:_tree];
 }
 
+-(void) addPlayButton{
+    _play = [SKSpriteNode spriteNodeWithImageNamed:@"PlaySimbol"];
+    [_play setName:@"play"];
+    [_play setAnchorPoint:CGPointZero];
+    [_play setScale:0.1]; //0.05
+    [_play setPosition:CGPointMake(0 - _play.size.width,0)];
+    [_pauseScreen addChild:_play];
+}
 
+-(void)addMusicButton{
+    _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"MusicOkay"];
+    [_musicButton setName:@"music"];
+    [_musicButton setAnchorPoint:CGPointZero];
+    [_musicButton setScale:0.07]; //0.05
+    [_musicButton setPosition:CGPointMake(0 - _musicButton.size.width/25, 7)];
+    [_pauseScreen addChild:_musicButton];
+}
+
+
+//Pause Part
+//Play and Pause actions
+-(void) playAction{
+    [self pauseNode];
+    [_pauseScreen removeFromParent];
+    [_backgroundPaused removeFromParent];
+    [_play removeFromParent];
+}
+
+-(void) pauseAction{
+    self.paused = YES;
+    [_pause removeFromParent];
+    [self addBackgroundPaused];
+    //Set the characters behind the pause screen
+    [self actionEverythingUnFocus];
+    _pauseScreen = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(self.frame.size.width, self.frame.size.height)];
+    //Seta cor
+    _pauseScreen.fillColor = [SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.70];
+    [self addChild:_pauseScreen];
+    _pauseScreen.position = CGPointMake(self.size.width/2, self.size.height/2);
+    [self addPlayButton];
+    [self addMusicButton];
+}
 @end
