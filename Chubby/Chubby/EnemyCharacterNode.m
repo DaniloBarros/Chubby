@@ -16,6 +16,7 @@
     SKSpriteNode *_enemyHead;
     SKSpriteNode *_wheel;
     
+    
     _tank = [self spriteNodeWithImageNamed:@"Tank"];
     _tank.anchorPoint = CGPointZero;
     _tank.position =CGPointMake(_tank.size.width*1.8, _tank.size.height*0.2);
@@ -44,6 +45,7 @@
     
     return _tank;
 }
+
 
 -(SKAction *)playShotAnimation{
     
