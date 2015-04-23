@@ -10,6 +10,7 @@
 
 @interface GameScene : SKScene
 
+
 -(void)fall:(BOOL)jump;
 
 @end
