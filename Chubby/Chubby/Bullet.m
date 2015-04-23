@@ -15,7 +15,7 @@
     self = [[Bullet alloc] initWithImageNamed:@"Bullet"];
     self.anchorPoint = CGPointMake(0.5, 0.5);
     self.position = position;
-    [self setScale:0.4];
+    [self setScale:0.5];
     self.name = @"bullet";
     
     NSNumber *x = [[NSNumber alloc] initWithDouble:velocity.x];

@@ -19,6 +19,7 @@
     SKSpriteNode *_pipe;
     
     _tank = [self spriteNodeWithImageNamed:@"TopTank"];
+
     [_tank setScale:0.3];
     _tank.anchorPoint = CGPointMake(0.5, 0.5);
     _tank.position = position;

@@ -47,7 +47,7 @@ static inline CGFloat roundFloatToTwoDecimalPlaces(CGFloat num) { return floorf(
 @property (nonatomic) PBParallaxBackgroundDirection direction;
 
 /** The size of the parallax background set */
-@property (nonatomic) CGSize size;
+//@property (nonatomic) CGSize size;
 
 @end
 
