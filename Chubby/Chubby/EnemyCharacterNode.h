@@ -12,6 +12,6 @@
 
 
 +(id)initWithPosition: (CGPoint)position;
--(SKAction *)playShotAnimation;
+-(void)runningAnimation;
 
 @end

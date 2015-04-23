@@ -11,14 +11,17 @@
 #import "EnemyCharacterNode.h"
 #import "PBParallaxScrolling.h"
 #import "ItensNode.h"
+#import "Bullet.h"
 
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
 #define SUPER_FALL 7
 #define NATURAL_FALL 0.4
 
+static const float SHOT_MOVE_POINTS_PER_SEC = 50;
+
 static const CGPoint gravity(){
-    return CGPointMake(0, -1);
+    return CGPointMake(0, -0.03);
 }
 
 
@@ -47,7 +50,7 @@ static inline CGPoint CGPointNormalize(const CGPoint a){
 }
  
 static inline CGFloat CGPointToAgle(const CGPoint a){
-    return atan2f(a.y, a.x);
+    return atan2f(a.x, a.y);
 }
 
 //static inline CGFloat CGPointDistance(const CGPoint a, const CGPoint b){
@@ -81,7 +84,11 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     ItensNode *_item;
     
     SKSpriteNode *_trampoline;
-    SKSpriteNode *_bullet;
+    SKSpriteNode *_pipeTank;
+    
+    Bullet *_bullet;
+    
+    
     SKSpriteNode *_bulletCollision;
     SKSpriteNode *_bulletCopy;
 
@@ -136,7 +143,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             //add tree
             [self addTree];
             //AdicionaBala
-            [self addBullet];
+            //[self addBullet];
             //Add Pause
             [self pauseNode];
             //Add Enemy
@@ -149,7 +156,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
             _speed = 30;
-            _force = CGVectorMake(0, -gravity().y);
+            _force = CGVectorMake(0, 0);
             _isImmune = NO;
             
         }
@@ -259,15 +266,75 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 -(void)playShot{
     
-    _bulletCopy = [_bullet copy];
-    [self addChild:_bulletCopy];
-    [_bulletCopy runAction:[SKAction repeatActionForever:[_enemy playShotAnimation]]withKey:@"shot"];
     
-    SKAction *shot = [SKAction moveTo:CGPointMake(self.size.width/5.5, _mainCharacter.position.y) duration:0.7];
-    SKAction *sequenceShot = [SKAction sequence:@[shot/*, [SKAction removeFromParent]*/]];
+    CGPoint positionBullet = CGPointMake(_enemy.position.x - _bullet.size.width - _enemy.size.width +12,
+                                         _enemy.position.y + _enemy.size.height + _bullet.size.height/2 -2);
+    
+    _bullet = [[Bullet alloc] initWithPosition:positionBullet
+                                     andVelocity:_mainCharacter.position];
+    
+    _bullet.zRotation = M_PI_4;
+    CGPoint offset = CGPointSubtract(_mainCharacter.position, _bullet.position);
+    
+    //NSLog(@"Offset %lf %lf", offset.x, offset.y);
+    
+    CGPoint direction = CGPointNormalize(offset);
+    
+    CGPoint velocity = CGPointMultiplyScalar(direction, SHOT_MOVE_POINTS_PER_SEC);
+    
+    NSLog(@"%lf %lf", velocity.x, velocity.y);
+    
+    [_bullet setTarget:velocity];
+    
+    [self addChild:[_bullet copy]];
+    
+}
 
-    [_bulletCopy runAction:sequenceShot];
-  
+-(void)moveShot{
+//    
+//    for (Bullet *bullet in [self children]) {
+//        if ([bullet.name isEqualToString:@"bullet"]) {
+//            NSLog(@"Target enumerate - %lf %lf", bullet.target.x, bullet.target.y);
+//            [self moveSprite:bullet toLocation:bullet.target];
+//        }
+//    }
+    
+    [self enumerateChildNodesWithName:@"bullet" usingBlock:^(SKNode *node, BOOL *stop) {
+        
+        Bullet *bullet = (Bullet*)node;
+        
+        CGPoint velocity = CGPointMake([[[bullet userData] valueForKey:@"X"] doubleValue], [[[bullet userData] valueForKey:@"Y"] doubleValue]);
+        [self moveSprite:bullet velocity:velocity];
+        CGPoint toFace = CGPointMultiplyScalar(velocity, -1);
+        toFace = CGPointMake(velocity.x*-1, velocity.y);
+        [self rotateSprite:bullet toFace:toFace rotateRadiasPerSec:M_PI];
+        
+    }];
+    
+}
+
+-(void)moveSprite:(SKSpriteNode*)sprite velocity:(CGPoint)velocity {
+    
+    CGPoint amountToMove = CGPointMultiplyScalar(velocity, (float)_dt);
+    
+    sprite.position = CGPointAdd(sprite.position, amountToMove);
+    
+}
+
+-(void)rotateSprite:(SKSpriteNode *)sprite
+             toFace:(CGPoint)direction
+ rotateRadiasPerSec:(CGFloat)rotateRadiansPerSec{
+    
+    float targetAngle = CGPointToAgle(direction);
+    float shortest = ScalarShortestAngleBetween(sprite.zRotation, targetAngle);
+    float amountToRotate = rotateRadiansPerSec * _dt;
+    
+    if (ABS(shortest) < amountToRotate) {
+        amountToRotate = ABS(shortest);
+    }
+    
+    sprite.zRotation += ScalarSign(shortest) * amountToRotate;
+    
 }
 
 -(SKAction *)animation: (int)first
@@ -341,7 +408,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void)collisionCheck{
     
     CGRect smallerFrame = CGRectInset(_trampoline.frame, 30, 30);
-    CGRect bulletFrame = CGRectInset(_bulletCopy.frame, 0, 0);
+    
    
     if (CGRectIntersectsRect(_mainCharacter.frame, smallerFrame)) {
         
@@ -363,24 +430,28 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     }
     
     //Bullet Collision
-
-    if(CGRectIntersectsRect(_mainCharacter.frame, bulletFrame)){
-        if (!_isImmune) {
-            
-            [self immunity:YES];
-            [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
-            
-            [_bulletCopy removeFromParent];
-            NSLog(@"colisao bala");
-            
-            if((_speed-4)>0)
-                _speed -= 4;
-            else
-                _speed = 0;
-            
-            [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
+    
+    [self enumerateChildNodesWithName:@"bullet" usingBlock:^(SKNode *node, BOOL *stop) {
+        CGRect bulletFrame = CGRectInset(node.frame, 0, 0);
+        
+        if(CGRectIntersectsRect(_mainCharacter.frame, bulletFrame)){
+            if (!_isImmune) {
+                
+                [self immunity:YES];
+                [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
+                node.name = @"";
+                [node removeFromParent];
+                
+                if((_speed-4)>0)
+                    _speed -= 4;
+                else
+                    _speed = 0;
+                
+                [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
+            }
         }
-    }
+    }];
+    
     
     //Main Character Collisions
     
@@ -398,6 +469,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         _parallaxIsOn = YES;
         
+        [_enemy runningAnimation];
     }
     
     //Hit the Ground
@@ -420,7 +492,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             _fall = 0;
             [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
         }
-        //[self launch];
     }
     
     //Hit the Sky
@@ -453,43 +524,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         }
         if (_tree) {
             _tree.position = CGPointMake(_tree.position.x - _speed, _tree.position.y);
-        }/*
-        if (_mainCharacter && _mainCharacter.position.x >= self.size.width/5.5) {
-            _mainCharacter.position = CGPointMake(_mainCharacter.position.x - _speed, _mainCharacter.position.y);
-            
-            
-            CGPoint offset = CGPointSubtract(CGPointMake(self.size.width, _mainCharacter.position.y-200), _mainCharacter.position);
-            
-            CGPoint direction = CGPointNormalize(offset);
-        
-            CGPoint velocity;
-            
-            velocity = CGPointMultiplyScalar(direction, _speed);
-            
-            [self rotateSprite:(SKSpriteNode*)_mainCharacter
-                        toFace:velocity
-            rotateRadiasPerSec:M_PI_4
-                         speed:velocity];
-        }*/
+        }
     }
-}
-
-
--(void)rotateSprite:(SKSpriteNode *)sprite
-             toFace:(CGPoint)direction
- rotateRadiasPerSec:(CGFloat)rotateRadiansPerSec
-              speed:(CGPoint)speed{
-    
-    float targetAngle = CGPointToAgle(speed);
-    float shortest = ScalarShortestAngleBetween(sprite.zRotation, targetAngle);
-    float amountToRotate = rotateRadiansPerSec * _dt;
-    
-    if (ABS(shortest) < amountToRotate) {
-        amountToRotate = ABS(shortest);
-    }
-    
-    sprite.zRotation += ScalarSign(shortest) * amountToRotate;
-    
 }
 
 
@@ -506,35 +542,23 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     if (_speed==0) {
         [_mainCharacter removeAllActions];
         _force = CGVectorMake(0, -gravity().y);
-        NSLog(@"Game Over");
+        //NSLog(@"Game Over");
     }
     
     [self moveLeft];
     [self addItems];
     
     [self timeShotInterval: currentTime];
+    [self moveShot];
     
     [_parallax update:currentTime];
     
-    /*Move Main in Y axis
-    CGPoint velocity = CGPointMake(_force.dx, _force.dy);
-    CGPoint amountDt = CGPointMultiplyScalar(velocity, _dt);
-    CGPoint amountToMove = CGPointAdd(amountDt, gravity());
-    */
-    
-    _mainCharacter.position = CGPointMake(_mainCharacter.position.x + _force.dx, _mainCharacter.position.y + (_force.dy + gravity().y));
-    
-    NSLog(@"%lf",_speed);
-    
-    //CGPointAdd(_mainCharacter.position, amountToMove);
-    
-    //CGPointMake(_mainCharacter.position.x, _mainCharacter.position.y + (_force + gravityY));
-    
-    /*
-    if (!_first) {
-     [self gravityFall:_fall];
+    if (_parallaxIsOn) {
+        [self applyForce:0 dy:gravity().y];
     }
-    */
+    
+    _mainCharacter.position = CGPointMake(_mainCharacter.position.x + _force.dx, _mainCharacter.position.y + _force.dy);
+    
 }
 
 -(void)addItems{
@@ -565,14 +589,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
 }
 
--(void)gravityFall:(float)fallValue{
-    _mainCharacter.position = CGPointMake(_mainCharacter.position.x, _mainCharacter.position.y - (NATURAL_FALL+_fall));
-    //    _fall = 0;
-}
-
-
-
-
 
 
 
@@ -598,8 +614,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 -(void)addEnemy{
+    _enemy = [EnemyCharacterNode initWithPosition:CGPointZero];
     _enemy = [EnemyCharacterNode initWithPosition:
-              CGPointMake(self.size.width/20, self.size.height/10)];
+              CGPointMake(self.size.width-_enemy.size.width, _ground.position.y + _enemy.size.height)];
     [self addChild:_enemy];
 }
 
@@ -641,11 +658,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void)addBullet{
     //Adding name to the bullet
     //add bullet
-    _bullet = [SKSpriteNode spriteNodeWithImageNamed:@"Bullet"];
+    /*_bullet = [SKSpriteNode spriteNodeWithImageNamed:@"Bullet"];
     _bullet.anchorPoint = CGPointZero;
     _bullet.position = CGPointMake(_bullet.size.width*10, _bullet.size.height*2);
     [_bullet setScale:0.4];
     _bullet.name = @"bullet";
+     */
     
 }
 
