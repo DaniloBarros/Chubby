@@ -12,21 +12,24 @@
 #import "PBParallaxScrolling.h"
 #import "ItensNode.h"
 #import "GameViewController.h"
+#import "GameOverScene.h"
 
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
 #define SUPER_FALL 7
 #define NATURAL_FALL 0.4
 
-//static const CGFloat gravityY = -5.0;
+static const CGPoint gravity(){
+    return CGPointMake(0, -1);
+}
 
 static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
     return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
 }
 
-//static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
-//    return CGPointMake(a.x + b.x, a.y + b.y);
-//}
+static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
+    return CGPointMake(a.x + b.x, a.y + b.y);
+}
 
 static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
     return CGPointMake(a.x - b.x, a.y - b.y);
@@ -89,7 +92,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     SKAction *_mainAction;
     
-    BOOL _first, _parallaxIsOn;
+    BOOL _first, _parallaxIsOn, _musicSound;
+    
+    BOOL _isImmune;
     
     CGFloat _impulse;
     CGFloat _impulsePlus;
@@ -101,10 +106,13 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     PBParallaxScrolling *_parallax;
     
     CGFloat _speed;
+    CGVector _force;
     
     CGFloat _fall;
     
     CGFloat _timeToNextShot;
+    
+    CGFloat _timeToNextItem;
     
     CGPoint _inicio;
     
@@ -114,10 +122,18 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     SKSpriteNode *_selectedNode;
     
     SKShapeNode *_pauseScreen;
+    SKLabelNode *_mensage;
+    
     
     AVAudioPlayer *_audio;
 
     SKSpriteNode *_backgroundPaused;
+    
+    SKSpriteNode *_logo;
+    
+    SKSpriteNode *_restart;
+    SKSpriteNode *_exit;
+    
 }
 
 -(id)initWithSize:(CGSize)size{
@@ -125,6 +141,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         if(self = [super initWithSize:size]){
             //add scenario game
             [self addScenario];
+            //AddMensage
+            [self addMensage];
+            //AddLogo
+            [self addLogo];
             //add MainCharacter
             [self addMainCharacter];
             //add ground
@@ -135,21 +155,27 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             [self addTrampoline];
             //add tree
             [self addTree];
-            //AdicionaBala
+            //AddBullet
             [self addBullet];
-            //Add Pause
-            [self pauseNode];
             //Add Enemy
             [self addEnemy];
+//-----------------------------------
             //AddMusic
-            //[self addMusic];
+            [self addMusic];
+            [self addMusicIcon];
+            
+            //AddExit
+            [self addExit];
+//-----------------------------------
             _impulsePlus = 0;
             _first = YES;
             _imageParallax = @[@"chaoParallax@2x",
                                @"arvoreParallax@2x",
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
-            _speed = 0;
+            _speed = 30;
+            _force = CGVectorMake(0, -gravity().y);
+            _isImmune = NO;
             
             
             
@@ -187,11 +213,20 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _first=NO;
 }
 
+-(void)applyForce:(CGFloat) dx dy:(CGFloat) dy{
+    _force = CGVectorMake(_force.dx + dx, _force.dy + dy);
+}
+
+-(void)immunity:(BOOL)immune{
+    _isImmune = immune;
+}
 
 //Make him fall fast
 -(void)tapInChubby{
     SKAction *action1;
     action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
+    [_mainCharacter runAction:action1];
+    [self applyForce: 0 dy:-7];
     _fall = SUPER_FALL;
 }
 
@@ -215,22 +250,18 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 -(void)launch{
-    
     [_mainCharacter runAction:
      [SKAction repeatActionForever:[_mainCharacter flyAnimation]]
                       withKey:@"launch" ];
+    [self applyForce:3 dy:3];
     
-    _speed = 30;
-    SKAction *move = [SKAction moveTo:
-                      CGPointMake(self.size.width, self.size.height/1.3)
-                             duration:0.7];
-    
-    [_mainCharacter runAction:move];
-
+    //Take Out music symbol
+    [_musicButton removeFromParent];
+    //   Add Pause
+    [self pauseNode];
 }
 
 -(void)playShot{
-    
     _bulletCopy = [_bullet copy];
     [self addChild:_bulletCopy];
     [_bulletCopy runAction:[SKAction repeatActionForever:[_enemy playShotAnimation]]withKey:@"shot"];
@@ -239,7 +270,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     SKAction *sequenceShot = [SKAction sequence:@[shot/*, [SKAction removeFromParent]*/]];
 
     [_bulletCopy runAction:sequenceShot];
-  
 }
 
 -(SKAction *)animation: (int)first
@@ -260,44 +290,75 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         NSString *textureName = [NSString stringWithFormat:animation, i];
         SKTexture *texture = [SKTexture textureWithImageNamed:textureName];
         [textures addObject:texture];
-        
-        
     }
     SKAction *action = [SKAction animateWithTextures:textures timePerFrame:duration];
-    
     return action;
 }
 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];
+    _inicio = [touch locationInNode:self];
+    SKSpriteNode *node = (SKSpriteNode*)[self nodeAtPoint:_inicio];
     if (_first) {
-        [self fall:_first];
+        [self firstTime:node];
     }else{
         //Tap actions
-        for (UITouch *touche in touches) {
-            _inicio = [touche locationInNode:self];
-            SKSpriteNode *node = (SKSpriteNode*)[self nodeAtPoint:_inicio];
-            if([node.name isEqualToString:@"pause"]){
-                [self pauseAction];
-            }
-            if([node.name isEqualToString:@"chubby"]){
-                [self tapInChubby];
-            }
-            if ([node.name isEqualToString:@"play"]) {
-                [self playAction];
-                self.paused = NO;
-            }
+        if([node.name isEqualToString:@"pause"]){
+            [self pauseAction];
+        } else if([node.name isEqualToString:@"chubby"]){
+            [self tapInChubby];
+        }else if ([node.name isEqualToString:@"play"]) {
+            [self playAction];
+            self.paused = NO;
+        }else if ([node.name isEqualToString:@"restart"]){
+            [_audio stop];
+            GameScene *scene = [[GameScene alloc]initWithSize:self.frame.size];
+            [self.view presentScene:scene];
+        } else if([node.name isEqualToString:@"music"]){
+            [self stopPauseMusic];
         }
     }
 }
 
--(void)collisionCheck{
+-(void)firstTime:(SKSpriteNode*)node{
+    if ([node.name isEqualToString:@"music"]) {
+        [self playStopMusic];
+    }else if([node.name isEqualToString:@"exit"]){
+        exit(0);
+    }else{
+        [_mensage removeFromParent];
+        [_logo removeFromParent];
+        [_exit removeFromParent];
+        [_musicButton removeFromParent];
+        [self fall:_first];
+    }
+}
+
+
+
+-(void)blinkSprite:(SKSpriteNode *)sprite
+        blinkTimes:(float)blinkTimes
+     blinkDuration:(float)blinkDuration{
     
+    SKAction *blinkAction = [SKAction customActionWithDuration:blinkDuration
+                                                   actionBlock:^(SKNode *node, CGFloat elapsedTime){
+                                                       float slice = blinkDuration / blinkTimes;
+                                                       float remainder = fmodf(elapsedTime, slice);
+                                                       node.hidden = remainder > slice / 2;
+                                                   }];
+    SKAction *notHidden = [SKAction customActionWithDuration:0
+                                                 actionBlock:^(SKNode *node, CGFloat elapsedTime){
+                                                     node.hidden = NO;
+                                                     _isImmune = NO;
+                                                 }];
+    [sprite runAction:[SKAction sequence:@[blinkAction, notHidden]]];
+}
+
+-(void)collisionCheck{
     CGRect smallerFrame = CGRectInset(_trampoline.frame, 30, 30);
     CGRect bulletFrame = CGRectInset(_bulletCopy.frame, 0, 0);
-   
     if (CGRectIntersectsRect(_mainCharacter.frame, smallerFrame)) {
-        
         NSMutableArray *texture = [[NSMutableArray alloc] initWithObjects:
                                    [SKTexture textureWithImageNamed:@"trampolim0000"],
                                    [SKTexture textureWithImageNamed:@"trampolim0001"],
@@ -305,32 +366,47 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                    [SKTexture textureWithImageNamed:@"trampolim0003"],
                                    [SKTexture textureWithImageNamed:@"trampolim0004"],
                                    nil];
-
-        
-        
         SKAction *actionTrampoline = [SKAction animateWithTextures:texture timePerFrame:0.03];
         [_trampoline runAction:actionTrampoline withKey:@"trampoline"];
-        
         [self launch];
-        _first=NO;
     }
+    [self enumerateChildNodesWithName:@"items" usingBlock:^(SKNode *node, BOOL *stop){
+        
+        SKSpriteNode *item = (SKSpriteNode *)node;
+        item.position = CGPointMake(item.position.x - _speed, item.position.y);
+        
+        
+        if(CGRectIntersectsRect(item.frame, _mainCharacter.frame)){
+            [item removeAllActions];
+            [item removeFromParent];
+        }
+    }];
     
     //verificar colisao
+    //Bullet Collision
 
     if(CGRectIntersectsRect(_mainCharacter.frame, bulletFrame)){
-      //  _speed--;
-        [_bulletCopy removeFromParent];
-        NSLog(@"colisao bala");
-    
+        if (!_isImmune) {
+            
+            [self immunity:YES];
+            [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
+            
+            [_bulletCopy removeFromParent];
+            
+            if((_speed-4)>0)
+                _speed -= 4;
+            else
+                _speed = 0;
+            
+            [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
+        }
     }
     
-
-    
-    
+    //Main Character Collisions
     
     CGPoint mainPosition = _mainCharacter.position;
     
-    if (mainPosition.x >= self.size.width  && !_parallaxIsOn) {
+    if ([_mainCharacter actionForKey:@"launch"]  && !_parallaxIsOn) {
         
         _parallax = [[PBParallaxScrolling alloc] initWithBackgrounds:_imageParallax
                                                                 size:self.size
@@ -339,16 +415,43 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                                     andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
         
         [self addChild:_parallax];
-        [self addChild:_item];
-        
         _parallaxIsOn = YES;
-        
     }
     
+    //Hit the Ground
     if(mainPosition.y <= 26.25){
-        _fall = 0;
-        _speed--;
-        [self launch];
+        
+        _mainCharacter.position = CGPointMake(_mainCharacter.position.x, 26.25);
+        SKAction *flyBack = [SKAction repeatActionForever:[_mainCharacter flyAnimation]];
+        [_mainCharacter runAction:flyBack];
+        
+        [self applyForce:0 dy:_speed/3];
+        
+        if (!_isImmune) {
+            [self immunity:YES];
+            [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
+            if((_speed-2)>0)
+                _speed -= 2;
+            else
+                _speed = 0;
+            
+            _fall = 0;
+            [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
+        }
+        //[self launch];
+    }
+    
+    //Hit the Sky
+    if (mainPosition.y >= self.size.height - _mainCharacter.size.height + 5) {
+        _force.dy = 0;
+    }
+    
+    //Pass the fixed Position in X axys
+    if (mainPosition.x > self.size.width/5.5 && _parallaxIsOn) {
+        _force.dx = -1;
+    }else if(mainPosition.x <= self.size.width/5.5 && _parallaxIsOn){
+        _force.dx = 0;
+        _mainCharacter.position = CGPointMake(self.size.width/5.5, _mainCharacter.position.y);
     }
     
     
@@ -368,23 +471,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         }
         if (_tree) {
             _tree.position = CGPointMake(_tree.position.x - _speed, _tree.position.y);
-        }
-        if (_mainCharacter && _mainCharacter.position.x >= self.size.width/5.5) {
-            _mainCharacter.position = CGPointMake(_mainCharacter.position.x - _speed, _mainCharacter.position.y);
-            
-            
-            CGPoint offset = CGPointSubtract(CGPointMake(self.size.width, _mainCharacter.position.y-200), _mainCharacter.position);
-            
-            CGPoint direction = CGPointNormalize(offset);
-        
-            CGPoint velocity;
-            
-            velocity = CGPointMultiplyScalar(direction, _speed);
-            
-            [self rotateSprite:(SKSpriteNode*)_mainCharacter
-                        toFace:velocity
-            rotateRadiasPerSec:M_PI_4
-                         speed:velocity];
         }
     }
 }
@@ -410,6 +496,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 - (void)update:(CFTimeInterval)currentTime {
 
+    
     if (_lastUpdatedTime) {
         _dt = currentTime - _lastUpdatedTime;
     }else{
@@ -418,22 +505,45 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     _lastUpdatedTime = currentTime;
     
+    if (_speed==0) {
+        [_mainCharacter removeAllActions];
+        _force = CGVectorMake(0, -gravity().y);
+        NSLog(@"Game Over");
+        GameOverScene *scene = [[GameOverScene alloc]initWithSize:self.frame.size];
+        [self.view presentScene:scene];
+    }
+    
     [self moveLeft];
-    [self addItems];
     
     //If the game is paused, everything stop
     if (self.paused == NO) {
-        [self timeShotInterval: currentTime];
+        [self timeShotInterval:currentTime];
+        [self timeItemInterval: currentTime];
         [_parallax update:currentTime];
-        if (!_first) {
-            [self gravityFall:_fall];
-        }
+        _mainCharacter.position = CGPointMake(_mainCharacter.position.x + _force.dx, _mainCharacter.position.y + (_force.dy + gravity().y));
     }
-    
 }
 
 -(void)addItems{
-    _item = [ItensNode initWithPosition:CGPointMake(self.size.width/2 , ScalarRandomRange(0, 10))];
+    CGFloat range = ScalarRandomRange(30, 90);
+    
+    _item = [ItensNode initWithPosition:CGPointMake(self.size.width,
+                                                    self.size.height*(range/100))];
+    _item.name = @"items";
+    
+    [self addChild:_item];
+    
+}
+
+-(void)timeItemInterval: (CFTimeInterval)currentTime{
+    
+    if(_timeToNextItem - currentTime <= 0 && _parallaxIsOn){
+        for (int cont = ScalarRandomRange(1, 3); cont>=0; cont--) {
+            [self addItems];
+        }
+        _timeToNextItem = ScalarRandomRange(1, 3);
+        _timeToNextItem+= currentTime;
+    }
 }
 
 -(void)timeShotInterval: (CFTimeInterval)currentTime{
@@ -447,8 +557,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void) didEvaluateActions{
     
     [self collisionCheck];
-    [self addItems];
-    
 }
 
 -(void)gravityFall:(float)fallValue{
@@ -456,27 +564,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     //    _fall = 0;
 }
 
-
-
-//Future Good Methods
--(void)stopMusic{
-    [_audio pause];
-}
-
--(void)playMusic{
-    [_audio play];
-}
-
-
 //Adding Images
-
--(void)addMusic{
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"FlyingTheme" ofType:@"mp3"]];
-    _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
-    _audio.numberOfLoops = -1;
-    [_audio play];
-}
-
 -(void)pauseNode{
     _pause = [SKSpriteNode spriteNodeWithImageNamed:@"Pause_icon_status"];
     _pause.position = CGPointMake(self.size.width/1.1, self.size.height/1.13);
@@ -496,9 +584,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 -(void)addBackgroundPaused{
-    _backgroundPaused = [SKSpriteNode spriteNodeWithImageNamed:@"Sky"];
+    _backgroundPaused = [SKSpriteNode spriteNodeWithImageNamed:@"WhiteScreen"];
     _backgroundPaused.position = CGPointMake(self.size.width/2, self.size.height/2);
-    [_backgroundPaused setScale:0.4];
+    
+    [_backgroundPaused setScale:1.0];
     [self addChild:_backgroundPaused];
 }
 
@@ -513,6 +602,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _mainCharacter = [MainCharacterNode initWithPosition:
                       CGPointMake(self.size.width/5.5, self.size.height*0.7)];
     _mainCharacter.name = @"chubby";
+    
     [self addChild:_mainCharacter];
     
 }
@@ -564,23 +654,35 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 -(void) addPlayButton{
-    _play = [SKSpriteNode spriteNodeWithImageNamed:@"PlaySimbol"];
+    _play = [SKSpriteNode spriteNodeWithImageNamed:@"play"];
     [_play setName:@"play"];
     [_play setAnchorPoint:CGPointZero];
-    [_play setScale:0.1]; //0.05
-    [_play setPosition:CGPointMake(0 - _play.size.width,0)];
+    [_play setScale:2.0]; //0.05
+    [_play setPosition:CGPointMake(-65 - _play.size.width,-27)];
     [_pauseScreen addChild:_play];
 }
 
--(void)addMusicButton{
-    _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"MusicOkay"];
-    [_musicButton setName:@"music"];
-    [_musicButton setAnchorPoint:CGPointZero];
-    [_musicButton setScale:0.07]; //0.05
-    [_musicButton setPosition:CGPointMake(0 - _musicButton.size.width/25, 7)];
-    [_pauseScreen addChild:_musicButton];
+
+
+-(void)addLogo{
+    _logo = [SKSpriteNode spriteNodeWithImageNamed:@"ChubbyLogo"];
+    _logo.position = CGPointMake(self.size.width/2, self.size.height/1.2);
+    //    [logo setScale:0.8];
+    [self addChild:_logo];
 }
 
+-(void)addMensage{
+    _mensage = [[SKLabelNode alloc]init];
+    _mensage.fontSize = 45;
+    _mensage.fontColor = [SKColor redColor];
+    _mensage.position = CGPointMake(self.size.width/1.4, self.size.height/10.13);
+    _mensage.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeRight;
+    [_mensage setText:@"Tap to Play"];
+    //    [_mensage runAction:[SKAction sequence:@[[SKAction fadeInWithDuration:0.5], [SKAction fadeOutWithDuration:1]]]]; //Piscando só uma vez
+    [self addChild:_mensage];
+}
+
+///------------------------------------------------------------------
 
 //Pause Part
 //Play and Pause actions
@@ -593,16 +695,124 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 -(void) pauseAction{
     self.paused = YES;
-    [_pause removeFromParent];
+    [_pause removeFromParent];//Arrumar um jeito para funcionar
     [self addBackgroundPaused];
-    //Set the characters behind the pause screen
-    [self actionEverythingUnFocus];
+    [self actionEverythingUnFocus];//Arrumar --- Set the characters behind the pause screen -- bullet
     _pauseScreen = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(self.frame.size.width, self.frame.size.height)];
     //Seta cor
     _pauseScreen.fillColor = [SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.70];
     [self addChild:_pauseScreen];
     _pauseScreen.position = CGPointMake(self.size.width/2, self.size.height/2);
     [self addPlayButton];
+    [self addRestartButton];
     [self addMusicButton];
+
+    //AddPauseLabel
+    SKSpriteNode *_pauseLabel  = [SKSpriteNode spriteNodeWithImageNamed:@"Pause"];
+    [_pauseLabel setScale:0.85];
+    _pauseLabel.zPosition = 1;
+    [_pauseLabel setPosition:CGPointMake(85 - _pauseLabel.size.width,80)];
+    [_pauseScreen addChild:_pauseLabel];
+
 }
+
+-(void)addRestartButton{
+    _restart = [SKSpriteNode spriteNodeWithImageNamed:@"restart"];//Mudar para o símbolo de restart
+    [_restart setName:@"restart"];
+    [_restart setScale:1.5];
+    [_restart setPosition:CGPointMake(0 - _restart.size.width/77,5)];
+    [_pauseScreen addChild:_restart];
+}
+
+
+//Music Methods -----------------------------------
+-(void)stopMusic{
+    [_audio pause];
+    [_musicButton removeFromParent];
+    _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"mute"];
+    [_musicButton setScale:1.0];
+    _musicButton.position = CGPointMake(self.size.width/1.1, self.size.height/1.13);
+    [_musicButton setName:@"music"];
+    [self addChild:_musicButton];
+}
+
+
+
+-(void)playMusic{
+    [_audio play];
+    [_musicButton removeFromParent];
+    _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"music"];
+    [_musicButton setScale:1.0];
+    _musicButton.position = CGPointMake(self.size.width/1.1, self.size.height/1.13);
+    [_musicButton setName:@"music"];
+    [self addChild:_musicButton];
+}
+
+-(void)playStopMusic{
+    if (_audio.isPlaying) {
+        [self stopMusic];
+    }else{
+        [self playMusic];
+    }
+}
+
+//-------Pause Part
+-(void)stopPauseMusic{
+    if (_audio.isPlaying) {
+        [self stopMusicActionPause];
+    }else{
+        [_audio play];
+        [_musicButton removeFromParent];
+        [self addMusicButton];
+    }
+}
+
+-(void)stopMusicActionPause{
+    [_audio pause];
+    [_musicButton removeFromParent];
+    _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"mute"];
+    [_musicButton setName:@"music"];
+    [_musicButton setAnchorPoint:CGPointZero];
+    [_musicButton setScale:2.0];
+    [_musicButton setPosition:CGPointMake(60 - _musicButton.size.width/25, -25)];
+    _musicButton.zPosition = 0.7;
+    [_pauseScreen addChild:_musicButton];
+}
+
+
+-(void)addMusicButton{
+    _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"music"];
+    [_musicButton setName:@"music"];
+    [_musicButton setAnchorPoint:CGPointZero];
+    [_musicButton setScale:2.0];
+    [_musicButton setPosition:CGPointMake(60 - _musicButton.size.width/25, -25)];
+    _musicButton.zPosition = 0.7;
+    [_pauseScreen addChild:_musicButton];
+}
+-(void)addMusicIcon{
+    _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"music"];
+    [_musicButton setName:@"music"];
+    _musicButton.position = CGPointMake(self.size.width/1.1, self.size.height/1.13);
+    [_musicButton setScale:1.0];
+    [self addChild:_musicButton];
+}
+
+-(void)addMusic{
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"FlyingTheme" ofType:@"mp3"]];
+    _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    _audio.numberOfLoops = -1;
+    [_audio play];
+
+}
+
+//-------------------------------------------------
+-(void)addExit{
+    _exit = [SKSpriteNode spriteNodeWithImageNamed:@"Quit"];
+    [_exit setName:@"exit"];
+    _exit.position = CGPointMake(self.size.width/1.1, self.size.height/1.43);
+    [_exit setScale:1.0];
+    [self addChild:_exit];
+}
+
+
 @end

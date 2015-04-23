@@ -8,6 +8,7 @@
 
 #import "GameViewController.h"
 #import "GameScene.h"
+#import "GameOverScene.h"
 
 @implementation SKScene (Unarchive)
 
