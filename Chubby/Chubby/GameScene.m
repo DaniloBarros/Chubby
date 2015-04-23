@@ -11,6 +11,7 @@
 #import "EnemyCharacterNode.h"
 #import "PBParallaxScrolling.h"
 #import "ItensNode.h"
+#import "MarshmallowNode.h"
 
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
@@ -26,26 +27,26 @@ static inline CGFloat ScalarRandomRange(CGFloat min, CGFloat max){
     return floorf( ((double)arc4random() / ARC4RANDOM_MAX) * (max - min)+min);
 }
 
-static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
-    return CGPointMake(a.x + b.x, a.y + b.y);
-}
+//static inline CGPoint CGPointAdd(const CGPoint a, const CGPoint b){
+//    return CGPointMake(a.x + b.x, a.y + b.y);
+//}
+//
+//static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
+//    return CGPointMake(a.x - b.x, a.y - b.y);
+//}
+//
+//static inline CGPoint CGPointMultiplyScalar(const CGPoint a, const CGFloat x){
+//    return CGPointMake(a.x * x, a.y * x);
+//}
+//static inline CGFloat CGPointLenght(const CGPoint a){
+//    return sqrt(a.x * a.x + a.y * a.y);
+//}
+//
+//static inline CGPoint CGPointNormalize(const CGPoint a){
+//    CGFloat lenght = CGPointLenght(a);
+//    return CGPointMake(a.x/lenght, a.y/lenght);
+//}
 
-static inline CGPoint CGPointSubtract(const CGPoint a, const CGPoint b){
-    return CGPointMake(a.x - b.x, a.y - b.y);
-}
-
-static inline CGPoint CGPointMultiplyScalar(const CGPoint a, const CGFloat x){
-    return CGPointMake(a.x * x, a.y * x);
-}
-static inline CGFloat CGPointLenght(const CGPoint a){
-    return sqrt(a.x * a.x + a.y * a.y);
-}
-
-static inline CGPoint CGPointNormalize(const CGPoint a){
-    CGFloat lenght = CGPointLenght(a);
-    return CGPointMake(a.x/lenght, a.y/lenght);
-}
- 
 static inline CGFloat CGPointToAgle(const CGPoint a){
     return atan2f(a.y, a.x);
 }
@@ -79,24 +80,30 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     MainCharacterNode *_mainCharacter;
     EnemyCharacterNode *_enemy;
     ItensNode *_item;
+    MarshmallowNode *_marshmallow;
+    
     
     SKSpriteNode *_trampoline;
     SKSpriteNode *_bullet;
     SKSpriteNode *_bulletCollision;
     SKSpriteNode *_bulletCopy;
-
+    SKSpriteNode *_pause;
+    SKSpriteNode *_play;
+    SKSpriteNode *_selectedNode;
     SKSpriteNode *_ground;
     SKSpriteNode *_tree;
     SKSpriteNode *_building;
     
+    SKTexture *_idCandy;
+    SKTexture *_idFrenchFries;
+    SKTexture *_idIceCream;
+    
     SKAction *_mainAction;
     
     BOOL _first, _parallaxIsOn;
-    
     BOOL _isImmune;
     
-    CGFloat _impulse;
-    CGFloat _impulsePlus;
+    int frenchFriesPoint;
     
     NSTimeInterval _lastUpdatedTime;
     NSTimeInterval _dt;
@@ -105,19 +112,17 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     PBParallaxScrolling *_parallax;
     
     CGFloat _speed;
-    CGVector _force;
-    
     CGFloat _fall;
-    
     CGFloat _timeToNextShot;
-    
     CGFloat _timeToNextItem;
+    CGFloat _impulse;
+    CGFloat _impulsePlus;
+    CGFloat _timeToNextMarshmallow;
     
     CGPoint _inicio;
     
-    SKSpriteNode *_pause;
-    SKSpriteNode *_play;
-    SKSpriteNode *_selectedNode;
+    CGVector _force;
+    
     
     SKShapeNode *_pauseScreen;
 }
@@ -150,7 +155,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                @"arvoreParallax@2x",
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
-            _speed = 30;
+            _speed = 20;
             _force = CGVectorMake(0, -gravity().y);
             _isImmune = NO;
             
@@ -248,13 +253,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
      [SKAction repeatActionForever:[_mainCharacter flyAnimation]]
                       withKey:@"launch" ];
     
-    /*_speed = 30;
-    SKAction *move = [SKAction moveTo:
-                      CGPointMake(self.size.width, self.size.height/1.3)
-                             duration:0.7];
-    
-    [_mainCharacter runAction:move];*/
-    
     [self applyForce:3 dy:3];
 
 }
@@ -263,10 +261,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     _bulletCopy = [_bullet copy];
     [self addChild:_bulletCopy];
-    [_bulletCopy runAction:[SKAction repeatActionForever:[_enemy playShotAnimation]]withKey:@"shot"];
     
     SKAction *shot = [SKAction moveTo:CGPointMake(self.size.width/5.5, _mainCharacter.position.y) duration:0.7];
-    SKAction *sequenceShot = [SKAction sequence:@[shot/*, [SKAction removeFromParent]*/]];
+    SKAction *sequenceShot = [SKAction sequence:@[shot]];
 
     [_bulletCopy runAction:sequenceShot];
   
@@ -302,6 +299,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     if (_first) {
         [self fall:_first];
+        
     }else{
         //Tap actions
         for (UITouch *touche in touches) {
@@ -364,31 +362,71 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
     }
     
+    [self enumerateChildNodesWithName:@"marshmallow" usingBlock:^(SKNode *node, BOOL *stop){
+    
+        SKSpriteNode *marshmallow = (SKSpriteNode *)node;
+        marshmallow.position = CGPointMake(marshmallow.position.x - _speed, marshmallow.position.y);
+        
+        if (CGRectIntersectsRect(marshmallow.frame, _mainCharacter.frame)) {
+                
+            [self applyForce:0.0 dy:.5];
+            SKAction *flyBack = [SKAction repeatActionForever:[_mainCharacter flyAnimation]];
+            [_mainCharacter runAction:flyBack];
+
+        }
+    
+    }];
 
     [self enumerateChildNodesWithName:@"items" usingBlock:^(SKNode *node, BOOL *stop){
+        
+        _idCandy = [SKTexture textureWithImageNamed:@"Candy"];
+        _idFrenchFries = [SKTexture textureWithImageNamed:@"FrenchFries"] ;
+        _idIceCream = [SKTexture textureWithImageNamed:@"IceCream"];
         
         SKSpriteNode *item = (SKSpriteNode *)node;
         item.position = CGPointMake(item.position.x - _speed, item.position.y);
         
         
         if(CGRectIntersectsRect(item.frame, _mainCharacter.frame)){
+            
+            NSString *strItem = [[NSString alloc] initWithString:[[item texture] description]];
+            NSString *strCandy = [[NSString alloc] initWithString:[_idCandy description]];
+            
+            if ([strItem isEqual:strCandy]) {
+                    _speed += 2;
+                    [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
+            }
+
+            strCandy = [[NSString alloc] initWithString:[_idIceCream description]];
+            
+            if ([strItem isEqual:strCandy]) {
+                
+                [self applyForce:0.5 dy:0.5];
+            }
+            strCandy = [[NSString alloc] initWithString:[_idFrenchFries description]];
+            
+            if ([strItem isEqual:strCandy]) {
+                frenchFriesPoint++;
+                NSLog(@"%d",frenchFriesPoint);
+            }
+            
+            item.name = @"";
             [item removeAllActions];
             [item removeFromParent];
-            NSLog(@"Bateu no item");
+            
         }
     }];
-    
-    //verificar colisao
+    //verificar colisaor
     //Bullet Collision
 
     if(CGRectIntersectsRect(_mainCharacter.frame, bulletFrame)){
+        [_bulletCopy removeFromParent];
         if (!_isImmune) {
             
             [self immunity:YES];
             [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
             
-            [_bulletCopy removeFromParent];
-            NSLog(@"colisao bala");
+            //NSLog(@"colisao bala");
             
             if((_speed-4)>0)
                 _speed -= 4;
@@ -437,7 +475,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             _fall = 0;
             [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
         }
-        //[self launch];
     }
     
     //Hit the Sky
@@ -470,27 +507,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         }
         if (_tree) {
             _tree.position = CGPointMake(_tree.position.x - _speed, _tree.position.y);
-        }/*
-        if (_mainCharacter && _mainCharacter.position.x >= self.size.width/5.5) {
-            _mainCharacter.position = CGPointMake(_mainCharacter.position.x - _speed, _mainCharacter.position.y);
-            
-            
-            CGPoint offset = CGPointSubtract(CGPointMake(self.size.width, _mainCharacter.position.y-200), _mainCharacter.position);
-            
-            CGPoint direction = CGPointNormalize(offset);
-        
-            CGPoint velocity;
-            
-            velocity = CGPointMultiplyScalar(direction, _speed);
-            
-            [self rotateSprite:(SKSpriteNode*)_mainCharacter
-                        toFace:velocity
-            rotateRadiasPerSec:M_PI_4
-                         speed:velocity];
-          
         }
-        
-        }*/
     }
 }
 
@@ -527,7 +544,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     if (_speed==0) {
         [_mainCharacter removeAllActions];
         _force = CGVectorMake(0, -gravity().y);
-        NSLog(@"Game Over");
     }
     
     [self moveLeft];
@@ -536,30 +552,14 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     [self timeItemInterval: currentTime];
     
+    [self timeMarshmallowInterval:currentTime];
+    
     [_parallax update:currentTime];
     
-    /*Move Main in Y axis
-    CGPoint velocity = CGPointMake(_force.dx, _force.dy);
-    CGPoint amountDt = CGPointMultiplyScalar(velocity, _dt);
-    CGPoint amountToMove = CGPointAdd(amountDt, gravity());
-    */
     
     _mainCharacter.position = CGPointMake(_mainCharacter.position.x + _force.dx, _mainCharacter.position.y + (_force.dy + gravity().y));
-    
-    NSLog(@"%lf",_speed);
-    
-    //CGPointAdd(_mainCharacter.position, amountToMove);
-    
-    //CGPointMake(_mainCharacter.position.x, _mainCharacter.position.y + (_force + gravityY));
-    
-    /*
-    if (!_first) {
-     [self gravityFall:_fall];
-    }
-    
-    
-    
-    */
+
+   
 }
 
 -(void)addItems{
@@ -567,26 +567,53 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     CGFloat range = ScalarRandomRange(30, 90);
     
-    _item = [ItensNode initWithPosition:CGPointMake(self.size.width,
-                                                    self.size.height*(range/100))];
+    _item = [[ItensNode alloc] initWithPosition:CGPointMake(self.size.width,
+                                                            self.size.height*(range/100))];
     _item.name = @"items";
     
     [self addChild:_item];
     
 }
 
+-(void)addMarshmallow{
+    
+    _marshmallow = [MarshmallowNode initWithPosition:CGPointMake(self.size.width,
+                                                                 26.25)];
+    _marshmallow.name = @"marshmallow";
+    [self addChild:_marshmallow];
+
+}
+
+
+
 -(void)timeItemInterval: (CFTimeInterval)currentTime{
     
     if(_timeToNextItem - currentTime <= 0 && _parallaxIsOn){
         
-        for (int cont = ScalarRandomRange(1, 3); cont>=0; cont--) {
+        for (int cont = ScalarRandomRange(1, 3); cont>0; cont--) {
             [self addItems];
         }
+                
         _timeToNextItem = ScalarRandomRange(1, 3);
         _timeToNextItem+= currentTime;
     }
 
 }
+
+-(void)timeMarshmallowInterval: (CFTimeInterval)currentTime{
+
+    if(_timeToNextMarshmallow - currentTime <=0 && _parallaxIsOn){
+    
+        for (int cont = ScalarRandomRange(1, 4); cont>=0; cont--) {
+            [self addMarshmallow];
+        }
+        
+        _timeToNextMarshmallow = ScalarRandomRange(1, 4);
+        _timeToNextMarshmallow+=currentTime;
+    }
+
+}
+
 
 -(void)timeShotInterval: (CFTimeInterval)currentTime{
     
@@ -615,9 +642,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 
-
-
-
 //Adding Images
 
 -(void)pauseNode{
@@ -640,9 +664,13 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 -(void)addEnemy{
+    
     _enemy = [EnemyCharacterNode initWithPosition:
-              CGPointMake(self.size.width/20, self.size.height/10)];
-    [self addChild:_enemy];
+              CGPointMake(0, 26.25)];
+    
+        [self addChild:_enemy];
+
+    
 }
 
 -(void)addMainCharacter{
