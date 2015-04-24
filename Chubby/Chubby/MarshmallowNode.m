@@ -17,6 +17,7 @@
     _marshmallow = [MarshmallowNode spriteNodeWithImageNamed:@"Marshmallow"];
     _marshmallow.anchorPoint = CGPointMake(0.5, 0);
     _marshmallow.position = position;
+    _marshmallow.zPosition = -1;
     [_marshmallow setScale:0.9];
     
     return _marshmallow;
