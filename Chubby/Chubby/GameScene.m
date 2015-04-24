@@ -17,13 +17,14 @@
 #import "CottonCandyNode.h"
 #import "FrenchFries.h"
 #import "IceCreamNode.h"
+#import "ScoreData.h"
 
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
 #define SUPER_FALL 7
 #define NATURAL_FALL 0.4
 
-static const float SHOT_MOVE_POINTS_PER_SEC = 200;
+static const float SHOT_MOVE_POINTS_PER_SEC = 350;
 
 static const CGPoint gravity(){
     return CGPointMake(0, -0.03);
@@ -91,6 +92,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     MarshmallowNode *_marshmallow;
     
+    SKLabelNode *_scoreLabel;
+    SKLabelNode *_fries;
+    
+    float _highScore;
+    float _score;
+    int _frenchFriesPoint;
     
     SKSpriteNode *_trampoline;
     SKSpriteNode *_pipeTank;
@@ -112,8 +119,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     BOOL _first, _parallaxIsOn, _musicSound;
     BOOL _isImmune;
-    
-    int frenchFriesPoint;
     
     NSTimeInterval _lastUpdatedTime;
     NSTimeInterval _dt;
@@ -138,6 +143,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     SKSpriteNode *_musicButton;
     SKSpriteNode *_selectedNode;
     CGVector _force;
+    
+    CGPoint _bgLastPosition;
     
     SKShapeNode *_pauseScreen;
     SKLabelNode *_mensage;
@@ -173,10 +180,25 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             [self addTrampoline];
             //add tree
             [self addTree];
-            //AddBullet
-            [self addBullet];
             //Add Enemy
             [self addEnemy];
+            
+            _scoreLabel = [[SKLabelNode alloc] init];
+            _scoreLabel.fontSize = 18;
+            _scoreLabel.fontColor = [SKColor blackColor];
+            _scoreLabel.position = CGPointMake(10, self.size.height - 20);
+            _scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
+            [_scoreLabel setText:[NSString stringWithFormat:@"Score: %.1f",0.0]];
+            
+            
+            _fries = [[SKLabelNode alloc] init];
+            _fries.fontSize = 18;
+            _fries.fontColor = [SKColor blackColor];
+            _fries.position = CGPointMake(_scoreLabel.position.x, _scoreLabel.position.y - _scoreLabel.fontSize );
+            _fries.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
+            [_fries setText:[NSString stringWithFormat:@"Fries: %d",0]];
+            
+            
 //-----------------------------------
             //AddMusic
             [self addMusic];
@@ -192,12 +214,15 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
             
-            _speed = 10;
+    _speed = 17;
             _force = CGVectorMake(0, 0);
+            _score = 0;
             
             _isImmune = NO;
             
             
+            //Chama dados highscore
+            _highScore = [ScoreData sharedGameData].highScore;
             
         }
         return self;
@@ -247,7 +272,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
     [_mainCharacter runAction:action1];
     [self applyForce: 0 dy:-7];
-    _fall = SUPER_FALL;
 }
 
 -(void)actionEverythingUnFocus{
@@ -296,13 +320,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _bullet.zRotation = M_PI_4;
     CGPoint offset = CGPointSubtract(_mainCharacter.position, _bullet.position);
     
-    //NSLog(@"Offset %lf %lf", offset.x, offset.y);
-    
     CGPoint direction = CGPointNormalize(offset);
     
     CGPoint velocity = CGPointMultiplyScalar(direction, SHOT_MOVE_POINTS_PER_SEC);
-    
-    NSLog(@"%lf %lf", velocity.x, velocity.y);
     
     [_bullet setTarget:velocity];
     
@@ -491,8 +511,11 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             strCandy = [[NSString alloc] initWithString:[_idFrenchFries description]];
 
             if ([strItem isEqual:strCandy]) {
-                frenchFriesPoint++;
-                NSLog(@"%d",frenchFriesPoint);
+                _frenchFriesPoint++;
+                
+                [_fries setText:[NSString stringWithFormat:@"Fries: %d", _frenchFriesPoint]];
+                
+                //NSLog(@"%d",_frenchFriesPoint);
             }
             
             item.name = @"";
@@ -515,8 +538,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                 node.name = @"";
                 [node removeFromParent];
                 
-                if((_speed-4)>0)
-                    _speed -= 4;
+                if((_speed-5)>0)
+                    _speed -= 5;
                 else
                     _speed = 0;
                 
@@ -542,6 +565,14 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         _parallaxIsOn = YES;
 
         
+        //Gambiarra
+        _bgLastPosition = CGPointMake(1304, 0);
+        //NSLog(@"Inicial %f", _bgLastPosition.x);
+        
+        [self addChild:_scoreLabel];
+        [self addChild:_fries];
+        
+        
         [_enemy runningAnimation];
     }
     
@@ -557,8 +588,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         if (!_isImmune) {
             [self immunity:YES];
             [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
-            if((_speed-2)>0)
-                _speed -= 2;
+            if((_speed-7)>0)
+                _speed -= 7;
             else
                 _speed = 0;
             
@@ -616,12 +647,19 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     if (_speed==0) {
         [_mainCharacter removeAllActions];
         _force = CGVectorMake(0, -gravity().y);
-        NSLog(@"Game Over");
-        GameOverScene *scene = [[GameOverScene alloc]initWithSize:self.frame.size];
+        NSLog(@"Game Over %.1f", _score);
+        
+        _highScore = MAX(_highScore, _score);
+        
+        [[ScoreData sharedGameData] setHighScore:_highScore];
+        [[ScoreData sharedGameData] save];
+        
+        GameOverScene *scene = [[GameOverScene alloc]initWithSize:self.frame.size andScore:_score];
         [self.view presentScene:scene];
     }
     
     [self moveLeft];
+
     //If the game is paused, everything stop
     if (self.paused == NO) {
         [self timeShotInterval: currentTime];
@@ -634,10 +672,42 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [_parallax update:currentTime];
         
         if (_parallaxIsOn) {
+            if (_bgLastPosition.x >= 0) {
+                //0.02267 = 1.70 / 75
+                // 1.70 altura gordinho
+                //75 heigth gordinho
+                //NSLog(@"Positivo %f %f %f", _bgLastPosition.x, [_parallax bg1].position.x, (_bgLastPosition.x - [_parallax bg1].position.x));
+                
+                _score += (_bgLastPosition.x - [_parallax bg1].position.x)*0.02267;
+                _bgLastPosition = [_parallax bg1].position;
+            }else{
+                
+                float lastX = _bgLastPosition.x + (_bgLastPosition.x * -1)*2;
+                float x = [_parallax bg1].position.x * -1;//[_parallax bg1].position.x + ([_parallax bg1].position.x * -1)*2;
+                float sum = (x - lastX )*0.02267;
+                
+                if (sum < 0) {
+                    sum *= -1;
+                }
+                
+                _score += sum;
+                
+                //NSLog(@"%f %f", _bgLastPosition.x, [_parallax bg1].position.x);
+                //NSLog(@"Negativo %f %f %f", x, lastX, x - lastX);
+                
+                _bgLastPosition = [_parallax bg1].position;
+            }
+            
+            [_scoreLabel setText:[NSString stringWithFormat:@"Score: %.1f",_score]];
+            //NSLog(@"%.1f %lf",_score, _bgLastPosition.x);
+        }
+        
+        if (_parallaxIsOn) {
             [self applyForce:0 dy:gravity().y];
         }
         
         _mainCharacter.position = CGPointMake(_mainCharacter.position.x + _force.dx, _mainCharacter.position.y + _force.dy);
+
     }
 
 }
@@ -826,10 +896,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [self addChild:_trampoline];
 }
 
--(void)addBullet{
-    
-}
-
 -(void)addTree{
     _tree = [SKSpriteNode spriteNodeWithImageNamed:@"Tree"];
     _tree.anchorPoint = CGPointMake(0.5, 0);
@@ -984,7 +1050,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 -(void)addMusic{
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"Flaws" ofType:@"mp3"]];
+
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"Boom" ofType:@"mp3"]];
     _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
     _audio.numberOfLoops = -1;
     [_audio play];

@@ -8,12 +8,18 @@
 
 #import "GameOverScene.h"
 #import "GameScene.h"
-
+#import "ScoreData.h"
 @implementation GameOverScene
+{
+    float _score;
+}
 
--(id)initWithSize:(CGSize)size{
+-(id)initWithSize:(CGSize)size andScore:(float)score{
     self = [super initWithSize:size];
     if (self) {
+        
+        _score = score;
+        
         [self addBackgroundGameOver];
         // Parte do HighScore
         //Parte feita de pontos até ele morrer
@@ -50,7 +56,13 @@
 -(SKSpriteNode*)addHighScoreLabel{
     SKSpriteNode *_scoreLabel = [SKSpriteNode spriteNodeWithImageNamed:@"HighScore"];//Vai ser trocado por Score
     SKLabelNode *_label = [[SKLabelNode alloc]init];
-    [_label setText:@"---m"];//Chamar para calcular Score
+    
+    float highscore = [[ScoreData sharedGameData] highScore];
+    
+    [_label setText:[NSString stringWithFormat:@"%.1f", highscore]];//Chamar para calcular Score
+    
+    _label.fontColor = [SKColor blackColor];
+    
     [_label setPosition:CGPointMake(390, 115)];
     [self addChild:_label];
     _scoreLabel.zPosition = 1;
@@ -62,8 +74,10 @@
 -(SKSpriteNode*)addLastScoreLabel{
     SKSpriteNode *_highScore = [SKSpriteNode spriteNodeWithImageNamed:@"HighScore"];
     SKLabelNode *_label = [[SKLabelNode alloc]init];
-    [_label setText:@"---n"];//Chamar para calcular Score
+    _label.fontColor = [SKColor blackColor];
     [_label setPosition:CGPointMake(390, 85)];
+    
+    [_label setText:[NSString stringWithFormat:@"%.1f",_score]];//Chamar para calcular Score
     [self addChild:_label];
     _highScore.position = CGPointMake(self.size.width/35.5, self.size.height/25.5);
     [_highScore setScale:0.6];
@@ -85,7 +99,7 @@
 
 //-------Buttons na tela
 -(SKNode*)addQuitButton{
-    SKSpriteNode *_quit = [SKSpriteNode spriteNodeWithImageNamed:@"Quit"];//Mudar para o símbolo de restart
+    SKSpriteNode *_quit = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];//Mudar para o símbolo de restart
     [_quit setName:@"quit"];
     [_quit setScale:1.0];
     _quit.zPosition = 1;

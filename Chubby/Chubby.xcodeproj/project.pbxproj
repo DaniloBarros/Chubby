@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9308C9CD1AEAE4A100C9A2B4 /* ScoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9308C9CC1AEAE4A100C9A2B4 /* ScoreData.m */; };
+		9308C9CF1AEAE4CC00C9A2B4 /* Boom.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9308C9CE1AEAE4CC00C9A2B4 /* Boom.mp3 */; };
 		93803E7C1AE030BB00825672 /* EnemyCharacterNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 93803E7B1AE030BB00825672 /* EnemyCharacterNode.m */; };
 		93803E9D1AE0320700825672 /* animacao_pulo0.png in Resources */ = {isa = PBXBuildFile; fileRef = 93803E7F1AE0320700825672 /* animacao_pulo0.png */; };
 		93803E9E1AE0320700825672 /* animacao_pulo1.png in Resources */ = {isa = PBXBuildFile; fileRef = 93803E801AE0320700825672 /* animacao_pulo1.png */; };
@@ -245,6 +247,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9308C9CB1AEAE4A100C9A2B4 /* ScoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScoreData.h; path = Chubby/ScoreData.h; sourceTree = "<group>"; };
+		9308C9CC1AEAE4A100C9A2B4 /* ScoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScoreData.m; path = Chubby/ScoreData.m; sourceTree = "<group>"; };
+		9308C9CE1AEAE4CC00C9A2B4 /* Boom.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Boom.mp3; sourceTree = "<group>"; };
 		93803E7B1AE030BB00825672 /* EnemyCharacterNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnemyCharacterNode.m; sourceTree = "<group>"; };
 		93803E7D1AE031A100825672 /* EnemyCharacterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnemyCharacterNode.h; sourceTree = "<group>"; };
 		93803E7F1AE0320700825672 /* animacao_pulo0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = animacao_pulo0.png; sourceTree = "<group>"; };
@@ -740,6 +745,8 @@
 		93DE3B821ADC38B3003607B3 = {
 			isa = PBXGroup;
 			children = (
+				9308C9CB1AEAE4A100C9A2B4 /* ScoreData.h */,
+				9308C9CC1AEAE4A100C9A2B4 /* ScoreData.m */,
 				93DE3B8D1ADC38B3003607B3 /* Chubby */,
 				93DE3BAC1ADC38B3003607B3 /* ChubbyTests */,
 				93DE3B8C1ADC38B3003607B3 /* Products */,
@@ -843,6 +850,7 @@
 		DFCFF3791AE022F9001869B5 /* Parallax */ = {
 			isa = PBXGroup;
 			children = (
+				9308C9CE1AEAE4CC00C9A2B4 /* Boom.mp3 */,
 				DFCFF37A1AE022F9001869B5 /* arvoreParallax@2x.png */,
 				DFCFF37B1AE022F9001869B5 /* arvoresParallaxFront@2x.png */,
 				DFCFF37C1AE022F9001869B5 /* chaoParallax@2x.png */,
@@ -974,6 +982,7 @@
 				93803FA51AE0345900825672 /* magrelo0064.png in Resources */,
 				93803FA21AE0345900825672 /* magrelo0061.png in Resources */,
 				93803F651AE0345900825672 /* magrelo0000.png in Resources */,
+				9308C9CF1AEAE4CC00C9A2B4 /* Boom.mp3 in Resources */,
 				93FD464B1AE9A7FA00A5D1D4 /* GameOver.imageset in Resources */,
 				93803FAD1AE0345900825672 /* magrelo0072.png in Resources */,
 				93803F6D1AE0345900825672 /* magrelo0008.png in Resources */,
@@ -1171,6 +1180,7 @@
 				93DE3B911ADC38B3003607B3 /* main.m in Sources */,
 				93FD46431AE9A72500A5D1D4 /* GameOverScene.m in Sources */,
 				93C5EF191AE82F34007CF93D /* MarshmallowNode.m in Sources */,
+				9308C9CD1AEAE4A100C9A2B4 /* ScoreData.m in Sources */,
 				93FD46571AEA80D100A5D1D4 /* IceCreamNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
