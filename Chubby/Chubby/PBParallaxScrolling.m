@@ -205,6 +205,9 @@ static inline CGFloat roundFloatToTwoDecimalPlaces(CGFloat num) { return floorf(
 
     }
     
+    [self setBg1:[self.backgrounds objectAtIndex:0]];
+    [self setBg2:[self.backgrounds objectAtIndex:1]];
+    [self setBg3:[self.backgrounds objectAtIndex:2]];
     
 }
 
