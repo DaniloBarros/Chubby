@@ -205,19 +205,19 @@
 		938040091AE0345900825672 /* trampolim0002.png in Resources */ = {isa = PBXBuildFile; fileRef = 93803F621AE0345900825672 /* trampolim0002.png */; };
 		9380400A1AE0345900825672 /* trampolim0003.png in Resources */ = {isa = PBXBuildFile; fileRef = 93803F631AE0345900825672 /* trampolim0003.png */; };
 		9380400B1AE0345900825672 /* trampolim0004.png in Resources */ = {isa = PBXBuildFile; fileRef = 93803F641AE0345900825672 /* trampolim0004.png */; };
-		93C5EF161AE80BE1007CF93D /* ItensNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 93C5EF151AE80BE1007CF93D /* ItensNode.m */; };
-		93C5EF191AE82F34007CF93D /* MarshmallowNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 93C5EF181AE82F34007CF93D /* MarshmallowNode.m */; };
 		93DE3B911ADC38B3003607B3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 93DE3B901ADC38B3003607B3 /* main.m */; };
 		93DE3B941ADC38B3003607B3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 93DE3B931ADC38B3003607B3 /* AppDelegate.m */; };
 		93DE3B971ADC38B3003607B3 /* GameScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 93DE3B961ADC38B3003607B3 /* GameScene.m */; };
 		93DE3B991ADC38B3003607B3 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 93DE3B981ADC38B3003607B3 /* GameScene.sks */; };
 		93DE3B9C1ADC38B3003607B3 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93DE3B9B1ADC38B3003607B3 /* GameViewController.m */; };
 		93DE3B9F1ADC38B3003607B3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 93DE3B9D1ADC38B3003607B3 /* Main.storyboard */; };
-		93DE3BA11ADC38B3003607B3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 93DE3BA01ADC38B3003607B3 /* Images.xcassets */; };
 		93DE3BA41ADC38B3003607B3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 93DE3BA21ADC38B3003607B3 /* LaunchScreen.xib */; };
 		93DE3BB01ADC38B3003607B3 /* ChubbyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 93DE3BAF1ADC38B3003607B3 /* ChubbyTests.m */; };
-		ACB5006A1AE1A81B00B538CD /* GamePause.m in Sources */ = {isa = PBXBuildFile; fileRef = ACB500691AE1A81B00B538CD /* GamePause.m */; };
-		DF1055B51AE98C66008D30B0 /* Bullet.m in Sources */ = {isa = PBXBuildFile; fileRef = DF1055B41AE98C66008D30B0 /* Bullet.m */; };
+		AC4949C91AE96B2100ED8E1A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC4949C81AE96B2100ED8E1A /* Images.xcassets */; };
+		AC4949D11AE9A09900ED8E1A /* Bullet.m in Sources */ = {isa = PBXBuildFile; fileRef = AC4949CE1AE9A09900ED8E1A /* Bullet.m */; };
+		AC4949D21AE9A09900ED8E1A /* MarshmallowNode.m in Sources */ = {isa = PBXBuildFile; fileRef = AC4949D01AE9A09900ED8E1A /* MarshmallowNode.m */; };
+		AC552E0A1AE81F7400A145E5 /* ItensNode.m in Sources */ = {isa = PBXBuildFile; fileRef = AC552E091AE81F7400A145E5 /* ItensNode.m */; };
+		AC552E0D1AE8218300A145E5 /* GameOverScene.m in Sources */ = {isa = PBXBuildFile; fileRef = AC552E0C1AE8218300A145E5 /* GameOverScene.m */; };
 		DFCFF3751ADEFA27001869B5 /* MainCharacterNode.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */; };
 		DFCFF3781ADFEE30001869B5 /* PBParallaxScrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCFF3771ADFEE30001869B5 /* PBParallaxScrolling.m */; };
 /* End PBXBuildFile section */
@@ -432,10 +432,6 @@
 		93803F621AE0345900825672 /* trampolim0002.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trampolim0002.png; sourceTree = "<group>"; };
 		93803F631AE0345900825672 /* trampolim0003.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trampolim0003.png; sourceTree = "<group>"; };
 		93803F641AE0345900825672 /* trampolim0004.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trampolim0004.png; sourceTree = "<group>"; };
-		93C5EF141AE80BE1007CF93D /* ItensNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItensNode.h; sourceTree = "<group>"; };
-		93C5EF151AE80BE1007CF93D /* ItensNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItensNode.m; sourceTree = "<group>"; };
-		93C5EF171AE82F34007CF93D /* MarshmallowNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarshmallowNode.h; sourceTree = "<group>"; };
-		93C5EF181AE82F34007CF93D /* MarshmallowNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarshmallowNode.m; sourceTree = "<group>"; };
 		93DE3B8B1ADC38B3003607B3 /* Chubby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chubby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93DE3B8F1ADC38B3003607B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		93DE3B901ADC38B3003607B3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -447,15 +443,19 @@
 		93DE3B9A1ADC38B3003607B3 /* GameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
 		93DE3B9B1ADC38B3003607B3 /* GameViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameViewController.m; sourceTree = "<group>"; };
 		93DE3B9E1ADC38B3003607B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		93DE3BA01ADC38B3003607B3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		93DE3BA31ADC38B3003607B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		93DE3BA91ADC38B3003607B3 /* ChubbyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChubbyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		93DE3BAE1ADC38B3003607B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		93DE3BAF1ADC38B3003607B3 /* ChubbyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChubbyTests.m; sourceTree = "<group>"; };
-		ACB500681AE1A81B00B538CD /* GamePause.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamePause.h; sourceTree = "<group>"; };
-		ACB500691AE1A81B00B538CD /* GamePause.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GamePause.m; sourceTree = "<group>"; };
-		DF1055B31AE98C66008D30B0 /* Bullet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bullet.h; sourceTree = "<group>"; };
-		DF1055B41AE98C66008D30B0 /* Bullet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bullet.m; sourceTree = "<group>"; };
+		AC4949C81AE96B2100ED8E1A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		AC4949CD1AE9A09900ED8E1A /* Bullet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bullet.h; sourceTree = "<group>"; };
+		AC4949CE1AE9A09900ED8E1A /* Bullet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bullet.m; sourceTree = "<group>"; };
+		AC4949CF1AE9A09900ED8E1A /* MarshmallowNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarshmallowNode.h; sourceTree = "<group>"; };
+		AC4949D01AE9A09900ED8E1A /* MarshmallowNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarshmallowNode.m; sourceTree = "<group>"; };
+		AC552E081AE81F7400A145E5 /* ItensNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItensNode.h; sourceTree = "<group>"; };
+		AC552E091AE81F7400A145E5 /* ItensNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItensNode.m; sourceTree = "<group>"; };
+		AC552E0B1AE8218300A145E5 /* GameOverScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameOverScene.h; sourceTree = "<group>"; };
+		AC552E0C1AE8218300A145E5 /* GameOverScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameOverScene.m; sourceTree = "<group>"; };
 		DFCFF3731ADEFA27001869B5 /* MainCharacterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainCharacterNode.h; sourceTree = "<group>"; };
 		DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainCharacterNode.m; sourceTree = "<group>"; };
 		DFCFF3761ADFEE30001869B5 /* PBParallaxScrolling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBParallaxScrolling.h; sourceTree = "<group>"; };
@@ -731,31 +731,31 @@
 		93DE3B8D1ADC38B3003607B3 /* Chubby */ = {
 			isa = PBXGroup;
 			children = (
-				DF1055B31AE98C66008D30B0 /* Bullet.h */,
-				DF1055B41AE98C66008D30B0 /* Bullet.m */,
-				93C5EF141AE80BE1007CF93D /* ItensNode.h */,
-				93C5EF151AE80BE1007CF93D /* ItensNode.m */,
+				AC4949CD1AE9A09900ED8E1A /* Bullet.h */,
+				AC4949CE1AE9A09900ED8E1A /* Bullet.m */,
+				AC4949CF1AE9A09900ED8E1A /* MarshmallowNode.h */,
+				AC4949D01AE9A09900ED8E1A /* MarshmallowNode.m */,
+				AC552E081AE81F7400A145E5 /* ItensNode.h */,
+				AC552E091AE81F7400A145E5 /* ItensNode.m */,
 				DFCFF3761ADFEE30001869B5 /* PBParallaxScrolling.h */,
 				DFCFF3771ADFEE30001869B5 /* PBParallaxScrolling.m */,
 				93DE3B921ADC38B3003607B3 /* AppDelegate.h */,
 				93DE3B931ADC38B3003607B3 /* AppDelegate.m */,
-				93803E7D1AE031A100825672 /* EnemyCharacterNode.h */,
 				93803E7B1AE030BB00825672 /* EnemyCharacterNode.m */,
 				93DE3B951ADC38B3003607B3 /* GameScene.h */,
 				93DE3B961ADC38B3003607B3 /* GameScene.m */,
+				93803E7D1AE031A100825672 /* EnemyCharacterNode.h */,
 				DFCFF3731ADEFA27001869B5 /* MainCharacterNode.h */,
 				DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */,
 				93DE3B981ADC38B3003607B3 /* GameScene.sks */,
 				93DE3B9A1ADC38B3003607B3 /* GameViewController.h */,
-				93C5EF171AE82F34007CF93D /* MarshmallowNode.h */,
-				93C5EF181AE82F34007CF93D /* MarshmallowNode.m */,
 				93DE3B9B1ADC38B3003607B3 /* GameViewController.m */,
+				AC4949C81AE96B2100ED8E1A /* Images.xcassets */,
 				93DE3B9D1ADC38B3003607B3 /* Main.storyboard */,
-				93DE3BA01ADC38B3003607B3 /* Images.xcassets */,
 				93DE3BA21ADC38B3003607B3 /* LaunchScreen.xib */,
 				93DE3B8E1ADC38B3003607B3 /* Supporting Files */,
-				ACB500681AE1A81B00B538CD /* GamePause.h */,
-				ACB500691AE1A81B00B538CD /* GamePause.m */,
+				AC552E0B1AE8218300A145E5 /* GameOverScene.h */,
+				AC552E0C1AE8218300A145E5 /* GameOverScene.m */,
 			);
 			path = Chubby;
 			sourceTree = "<group>";
@@ -975,7 +975,6 @@
 				93803EB31AE0320700825672 /* animacao_pulo29.png in Resources */,
 				93803EAF1AE0320700825672 /* animacao_pulo25.png in Resources */,
 				93803FDD1AE0345900825672 /* magrelo0120.png in Resources */,
-				93DE3BA11ADC38B3003607B3 /* Images.xcassets in Resources */,
 				93803FAF1AE0345900825672 /* magrelo0074.png in Resources */,
 				93803FC21AE0345900825672 /* magrelo0093.png in Resources */,
 				93803F881AE0345900825672 /* magrelo0035.png in Resources */,
@@ -1030,6 +1029,7 @@
 				938040091AE0345900825672 /* trampolim0002.png in Resources */,
 				93803FE61AE0345900825672 /* magrelo0129.png in Resources */,
 				93803FFE1AE0345900825672 /* magrelo0153.png in Resources */,
+				AC4949C91AE96B2100ED8E1A /* Images.xcassets in Resources */,
 				93803FA81AE0345900825672 /* magrelo0067.png in Resources */,
 				93803EA41AE0320700825672 /* animacao_pulo15.png in Resources */,
 				93803FCE1AE0345900825672 /* magrelo0105.png in Resources */,
@@ -1108,16 +1108,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFCFF3781ADFEE30001869B5 /* PBParallaxScrolling.m in Sources */,
-				93C5EF161AE80BE1007CF93D /* ItensNode.m in Sources */,
+				AC552E0D1AE8218300A145E5 /* GameOverScene.m in Sources */,
 				93DE3B9C1ADC38B3003607B3 /* GameViewController.m in Sources */,
 				93DE3B941ADC38B3003607B3 /* AppDelegate.m in Sources */,
-				DF1055B51AE98C66008D30B0 /* Bullet.m in Sources */,
 				93DE3B971ADC38B3003607B3 /* GameScene.m in Sources */,
+				AC4949D11AE9A09900ED8E1A /* Bullet.m in Sources */,
+				AC4949D21AE9A09900ED8E1A /* MarshmallowNode.m in Sources */,
 				DFCFF3751ADEFA27001869B5 /* MainCharacterNode.m in Sources */,
 				93803E7C1AE030BB00825672 /* EnemyCharacterNode.m in Sources */,
-				ACB5006A1AE1A81B00B538CD /* GamePause.m in Sources */,
 				93DE3B911ADC38B3003607B3 /* main.m in Sources */,
-				93C5EF191AE82F34007CF93D /* MarshmallowNode.m in Sources */,
+				AC552E0A1AE81F7400A145E5 /* ItensNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
