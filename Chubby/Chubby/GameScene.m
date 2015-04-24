@@ -15,13 +15,14 @@
 #import "GameOverScene.h"
 #import "Bullet.h"
 #import "MarshmallowNode.h"
+#import "TutorialScene.h"
 
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
 #define SUPER_FALL 7
 #define NATURAL_FALL 0.4
 
-static const float SHOT_MOVE_POINTS_PER_SEC = 200;
+static const float SHOT_MOVE_POINTS_PER_SEC = 300;
 
 static const CGPoint gravity(){
     return CGPointMake(0, -0.03);
@@ -144,7 +145,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     SKSpriteNode *_restart;
     SKSpriteNode *_exit;
-    
+    SKSpriteNode *_tutorial;
 }
 
 -(id)initWithSize:(CGSize)size{
@@ -177,6 +178,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             
             //AddExit
             [self addExit];
+            
+            //AddTutorial
+            [self addTutorial];
 //-----------------------------------
             _impulsePlus = 0;
             _first = YES;
@@ -185,7 +189,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
             
-            _speed = 30;
+            _speed = 14;//Velocidade Pra mim perfeita
             _force = CGVectorMake(0, 0);
             
             _isImmune = NO;
@@ -394,13 +398,19 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [self playStopMusic];
     }else if([node.name isEqualToString:@"exit"]){
         exit(0);
+    }else if ([node.name isEqualToString:@"tutorial"]){
+        [self goTutorial];
     }else{
-        [_mensage removeFromParent];
-        [_logo removeFromParent];
-        [_exit removeFromParent];
-        [_musicButton removeFromParent];
         [self fall:_first];
+        [_mensage removeFromParent];
+        [_exit removeFromParent];
+        [_tutorial removeFromParent];
     }
+}
+
+-(void)goTutorial{
+    TutorialScene *scene = [[TutorialScene alloc]initWithSize:self.frame.size];
+    [self.view presentScene:scene];
 }
 
 
@@ -445,7 +455,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         if (CGRectIntersectsRect(marshmallow.frame, _mainCharacter.frame)) {
                 
-            [self applyForce:0.0 dy:.5];
+            [self applyForce:0.0 dy:.3];
             SKAction *flyBack = [SKAction repeatActionForever:[_mainCharacter flyAnimation]];
             [_mainCharacter runAction:flyBack];
 
@@ -506,8 +516,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                 node.name = @"";
                 [node removeFromParent];
                 
-                if((_speed-4)>0)
-                    _speed -= 4;
+                if((_speed-5)>0)
+                    _speed -= 7;
                 else
                     _speed = 0;
                 
@@ -548,8 +558,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         if (!_isImmune) {
             [self immunity:YES];
             [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
-            if((_speed-2)>0)
-                _speed -= 2;
+            if((_speed-7)>0)
+                _speed -= 7;
             else
                 _speed = 0;
             
@@ -588,6 +598,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         }
         if (_tree) {
             _tree.position = CGPointMake(_tree.position.x - _speed, _tree.position.y);
+        }
+        if(_logo){
+          _logo.position = CGPointMake(_logo.position.x - _speed, _logo.position.y);
         }
     }
 }
@@ -800,12 +813,13 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 -(void)addMensage{
+//    _mensage = [[SKLabelNode alloc]initWithFontNamed:@"Rebbiya"];
     _mensage = [[SKLabelNode alloc]init];
     _mensage.fontSize = 45;
-    _mensage.fontColor = [SKColor redColor];
-    _mensage.position = CGPointMake(self.size.width/1.4, self.size.height/10.13);
+    _mensage.fontColor = [SKColor blueColor];
+    _mensage.position = CGPointMake(self.size.width/1.4, self.size.height/8.13);
     _mensage.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeRight;
-    [_mensage setText:@"Tap to Play"];
+    _mensage.text = [NSString stringWithFormat:@"Tap To Play"];
     //    [_mensage runAction:[SKAction sequence:@[[SKAction fadeInWithDuration:0.5], [SKAction fadeOutWithDuration:1]]]]; //Piscando só uma vez
     [self addChild:_mensage];
 }
@@ -935,11 +949,20 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 //-------------------------------------------------
 -(void)addExit{
-    _exit = [SKSpriteNode spriteNodeWithImageNamed:@"Quit"];
+    _exit = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];
     [_exit setName:@"exit"];
-    _exit.position = CGPointMake(self.size.width/1.1, self.size.height/1.43);
+    _exit.position = CGPointMake(self.size.width/1.1, self.size.height/1.93);
     [_exit setScale:1.0];
     [self addChild:_exit];
+}
+
+
+-(void)addTutorial{
+    _tutorial = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];
+    [_tutorial setName:@"tutorial"];
+    _tutorial.position = CGPointMake(self.size.width/1.1, self.size.height/1.43);
+    [_tutorial setScale:1.0];
+    [self addChild:_tutorial];
 }
 
 
