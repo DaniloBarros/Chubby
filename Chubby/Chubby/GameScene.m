@@ -19,7 +19,7 @@
 #define SUPER_FALL 7
 #define NATURAL_FALL 0.4
 
-static const float SHOT_MOVE_POINTS_PER_SEC = 200;
+static const float SHOT_MOVE_POINTS_PER_SEC = 350;
 
 static const CGPoint gravity(){
     return CGPointMake(0, -0.03);
@@ -85,6 +85,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     ItensNode *_item;
     MarshmallowNode *_marshmallow;
     
+    float _score;
+    int _frenchFriesPoint;
     
     SKSpriteNode *_trampoline;
     SKSpriteNode *_pipeTank;
@@ -110,8 +112,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     BOOL _first, _parallaxIsOn;
     BOOL _isImmune;
     
-    int frenchFriesPoint;
-    
     NSTimeInterval _lastUpdatedTime;
     NSTimeInterval _dt;
     
@@ -130,6 +130,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     CGVector _force;
     
+    CGPoint _bgLastPosition;
     
     SKShapeNode *_pauseScreen;
 }
@@ -149,8 +150,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             [self addTrampoline];
             //add tree
             [self addTree];
-            //AdicionaBala
-            //[self addBullet];
             //Add Pause
             [self pauseNode];
             //Add Enemy
@@ -163,8 +162,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
             
-            _speed = 30;
+            _speed = 17;
             _force = CGVectorMake(0, 0);
+            _score = 0;
             
             _isImmune = NO;
             
@@ -216,7 +216,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     action1 = [SKAction repeatActionForever:[_mainCharacter fallAnimation]];
     [_mainCharacter runAction:action1];
     [self applyForce: 0 dy:-7];
-    _fall = SUPER_FALL;
 }
 
 
@@ -277,13 +276,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _bullet.zRotation = M_PI_4;
     CGPoint offset = CGPointSubtract(_mainCharacter.position, _bullet.position);
     
-    //NSLog(@"Offset %lf %lf", offset.x, offset.y);
-    
     CGPoint direction = CGPointNormalize(offset);
     
     CGPoint velocity = CGPointMultiplyScalar(direction, SHOT_MOVE_POINTS_PER_SEC);
-    
-    NSLog(@"%lf %lf", velocity.x, velocity.y);
     
     [_bullet setTarget:velocity];
     
@@ -468,8 +463,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             strCandy = [[NSString alloc] initWithString:[_idFrenchFries description]];
             
             if ([strItem isEqual:strCandy]) {
-                frenchFriesPoint++;
-                NSLog(@"%d",frenchFriesPoint);
+                _frenchFriesPoint++;
+                NSLog(@"%d",_frenchFriesPoint);
             }
             
             item.name = @"";
@@ -492,8 +487,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                 node.name = @"";
                 [node removeFromParent];
                 
-                if((_speed-4)>0)
-                    _speed -= 4;
+                if((_speed-5)>0)
+                    _speed -= 5;
                 else
                     _speed = 0;
                 
@@ -519,6 +514,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         _parallaxIsOn = YES;
         
+        //Gambiarra
+        _bgLastPosition = CGPointMake(1304, 0);
+        NSLog(@"Inicial %f", _bgLastPosition.x);
+        
         [_enemy runningAnimation];
     }
     
@@ -534,8 +533,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         if (!_isImmune) {
             [self immunity:YES];
             [self blinkSprite:_mainCharacter blinkTimes:5 blinkDuration:2];
-            if((_speed-2)>0)
-                _speed -= 2;
+            if((_speed-7)>0)
+                _speed -= 7;
             else
                 _speed = 0;
             
@@ -607,6 +606,32 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [self timeMarshmallowInterval:currentTime];
     
     [_parallax update:currentTime];
+    
+    if (_parallaxIsOn) {
+        if (_bgLastPosition.x >= 0) {
+            //0.02267 = 1.70 / 75
+            // 1.70 altura gordinho
+            //75 heigth gordinho
+            NSLog(@"Positivo %f %f %f", _bgLastPosition.x, [_parallax bg1].position.x, (_bgLastPosition.x - [_parallax bg1].position.x));
+            _score += (_bgLastPosition.x - [_parallax bg1].position.x)*0.02267;
+            _bgLastPosition = [_parallax bg1].position;
+        }else{
+            
+            float lastX = _bgLastPosition.x + (_bgLastPosition.x * -1)*2;
+            float x = [_parallax bg1].position.x * -1;//[_parallax bg1].position.x + ([_parallax bg1].position.x * -1)*2;
+            float sum = (x - lastX )*0.02267;
+            
+            if (sum < 0) {
+                sum *= -1;
+            }
+            
+            _score += sum;
+            //NSLog(@"%f %f", _bgLastPosition.x, [_parallax bg1].position.x);
+            NSLog(@"Negativo %f %f %f", x, lastX, x - lastX);
+            _bgLastPosition = [_parallax bg1].position;
+        }
+        NSLog(@"%.1f %lf",_score, _bgLastPosition.x);
+    }
     
     if (_parallaxIsOn) {
         [self applyForce:0 dy:gravity().y];
@@ -750,10 +775,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [_trampoline setScale:0.6];
     _trampoline.zPosition = -998;
     [self addChild:_trampoline];
-}
-
--(void)addBullet{
-    
 }
 
 -(void)addTree{

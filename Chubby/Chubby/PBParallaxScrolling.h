@@ -39,6 +39,9 @@ typedef enum {
 @interface PBParallaxScrolling : SKSpriteNode
 
 @property (nonatomic, strong) NSArray * backgrounds;
+@property (nonatomic) SKSpriteNode *bg1;
+@property (nonatomic) SKSpriteNode *bg2;
+@property (nonatomic) SKSpriteNode *bg3;
 
 /** @brief Designated initializer for the parallax backgorund. 
  * Creates and initializes a new parallax background of certain size, with some images, an initial velocity and a differential of this velocity to each background.
