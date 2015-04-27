@@ -484,7 +484,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         marshmallow.position = CGPointMake(marshmallow.position.x - _speed, marshmallow.position.y);
         
         if (CGRectIntersectsRect(marshmallow.frame, _mainCharacter.frame)) {
-                
             [self applyForce:0.0 dy:.3];
             SKAction *flyBack = [SKAction repeatActionForever:[_mainCharacter flyAnimation]];
             [_mainCharacter runAction:flyBack];

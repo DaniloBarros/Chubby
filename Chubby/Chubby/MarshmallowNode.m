@@ -19,7 +19,7 @@
     _marshmallow.position = position;
     _marshmallow.zPosition = -1;
     [_marshmallow setScale:0.9];
-    [_marshmallow setXScale:1.2];
+    [_marshmallow setXScale:1.8];//Eu acho - By Luan
     
     return _marshmallow;
 
