@@ -219,7 +219,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
             
-            _speed = 17;
+            _speed = 14;
             _force = CGVectorMake(0, 0);
             _score = 0;
             
@@ -841,12 +841,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 //Adding Images
 -(void)pauseNode{
-    _pause = [SKSpriteNode spriteNodeWithImageNamed:@"Pause_icon_status"];
+    _pause = [SKSpriteNode spriteNodeWithImageNamed:@"pauseSymbol"];
     _pause.position = CGPointMake(self.size.width/1.1, self.size.height/1.13);
     _pause.name = @"pause";
-    [_pause setScale:0.13];
+    [_pause setScale:1.0];
     
-   // [self addChild:_pause];
+    [self addChild:_pause];
 }
 
 -(void)addScenario{
@@ -1084,10 +1084,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 -(void)addTutorial{
-    _tutorial = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];
+    _tutorial = [SKSpriteNode spriteNodeWithImageNamed:@"TutorialSymbol"];
     [_tutorial setName:@"tutorial"];
     _tutorial.position = CGPointMake(self.size.width/1.1, self.size.height/1.43);
-    [_tutorial setScale:1.0];
+    [_tutorial setScale:0.05];
     [self addChild:_tutorial];
 }
 

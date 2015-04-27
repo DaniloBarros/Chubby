@@ -232,6 +232,7 @@
 		93FD46571AEA80D100A5D1D4 /* IceCreamNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 93FD46561AEA80D100A5D1D4 /* IceCreamNode.m */; };
 		93FD465A1AEA81F600A5D1D4 /* FrenchFries.m in Sources */ = {isa = PBXBuildFile; fileRef = 93FD46591AEA81F600A5D1D4 /* FrenchFries.m */; };
 		93FD465D1AEA82D800A5D1D4 /* CottonCandyNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 93FD465C1AEA82D800A5D1D4 /* CottonCandyNode.m */; };
+		AC4949EF1AEEC92E00ED8E1A /* TutorialScene.m in Sources */ = {isa = PBXBuildFile; fileRef = AC4949EE1AEEC92E00ED8E1A /* TutorialScene.m */; };
 		DFCFF3751ADEFA27001869B5 /* MainCharacterNode.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */; };
 		DFCFF3781ADFEE30001869B5 /* PBParallaxScrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = DFCFF3771ADFEE30001869B5 /* PBParallaxScrolling.m */; };
 /* End PBXBuildFile section */
@@ -247,8 +248,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9308C9CB1AEAE4A100C9A2B4 /* ScoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScoreData.h; path = Chubby/ScoreData.h; sourceTree = "<group>"; };
-		9308C9CC1AEAE4A100C9A2B4 /* ScoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScoreData.m; path = Chubby/ScoreData.m; sourceTree = "<group>"; };
+		9308C9CB1AEAE4A100C9A2B4 /* ScoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoreData.h; sourceTree = "<group>"; };
+		9308C9CC1AEAE4A100C9A2B4 /* ScoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoreData.m; sourceTree = "<group>"; };
 		9308C9CE1AEAE4CC00C9A2B4 /* Boom.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Boom.mp3; sourceTree = "<group>"; };
 		93803E7B1AE030BB00825672 /* EnemyCharacterNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnemyCharacterNode.m; sourceTree = "<group>"; };
 		93803E7D1AE031A100825672 /* EnemyCharacterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnemyCharacterNode.h; sourceTree = "<group>"; };
@@ -488,6 +489,8 @@
 		93FD46591AEA81F600A5D1D4 /* FrenchFries.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FrenchFries.m; sourceTree = "<group>"; };
 		93FD465B1AEA82D800A5D1D4 /* CottonCandyNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CottonCandyNode.h; sourceTree = "<group>"; };
 		93FD465C1AEA82D800A5D1D4 /* CottonCandyNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CottonCandyNode.m; sourceTree = "<group>"; };
+		AC4949ED1AEEC92E00ED8E1A /* TutorialScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutorialScene.h; sourceTree = "<group>"; };
+		AC4949EE1AEEC92E00ED8E1A /* TutorialScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutorialScene.m; sourceTree = "<group>"; };
 		DFCFF3731ADEFA27001869B5 /* MainCharacterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainCharacterNode.h; sourceTree = "<group>"; };
 		DFCFF3741ADEFA27001869B5 /* MainCharacterNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainCharacterNode.m; sourceTree = "<group>"; };
 		DFCFF3761ADFEE30001869B5 /* PBParallaxScrolling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBParallaxScrolling.h; sourceTree = "<group>"; };
@@ -745,8 +748,6 @@
 		93DE3B821ADC38B3003607B3 = {
 			isa = PBXGroup;
 			children = (
-				9308C9CB1AEAE4A100C9A2B4 /* ScoreData.h */,
-				9308C9CC1AEAE4A100C9A2B4 /* ScoreData.m */,
 				93DE3B8D1ADC38B3003607B3 /* Chubby */,
 				93DE3BAC1ADC38B3003607B3 /* ChubbyTests */,
 				93DE3B8C1ADC38B3003607B3 /* Products */,
@@ -767,6 +768,8 @@
 			isa = PBXGroup;
 			children = (
 				DFCFF3761ADFEE30001869B5 /* PBParallaxScrolling.h */,
+				9308C9CB1AEAE4A100C9A2B4 /* ScoreData.h */,
+				9308C9CC1AEAE4A100C9A2B4 /* ScoreData.m */,
 				DFCFF3771ADFEE30001869B5 /* PBParallaxScrolling.m */,
 				93DE3B921ADC38B3003607B3 /* AppDelegate.h */,
 				93DE3B931ADC38B3003607B3 /* AppDelegate.m */,
@@ -780,6 +783,8 @@
 				93803E7B1AE030BB00825672 /* EnemyCharacterNode.m */,
 				93DE3B951ADC38B3003607B3 /* GameScene.h */,
 				93DE3B961ADC38B3003607B3 /* GameScene.m */,
+				AC4949ED1AEEC92E00ED8E1A /* TutorialScene.h */,
+				AC4949EE1AEEC92E00ED8E1A /* TutorialScene.m */,
 				93FD46581AEA81F600A5D1D4 /* FrenchFries.h */,
 				93FD465B1AEA82D800A5D1D4 /* CottonCandyNode.h */,
 				93FD465C1AEA82D800A5D1D4 /* CottonCandyNode.m */,
@@ -1179,6 +1184,7 @@
 				93803E7C1AE030BB00825672 /* EnemyCharacterNode.m in Sources */,
 				93DE3B911ADC38B3003607B3 /* main.m in Sources */,
 				93FD46431AE9A72500A5D1D4 /* GameOverScene.m in Sources */,
+				AC4949EF1AEEC92E00ED8E1A /* TutorialScene.m in Sources */,
 				93C5EF191AE82F34007CF93D /* MarshmallowNode.m in Sources */,
 				9308C9CD1AEAE4A100C9A2B4 /* ScoreData.m in Sources */,
 				93FD46571AEA80D100A5D1D4 /* IceCreamNode.m in Sources */,

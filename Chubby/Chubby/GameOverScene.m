@@ -54,7 +54,7 @@
 
 //Adiciona plano de fundo e os botões e as Labels
 -(SKSpriteNode*)addHighScoreLabel{
-    SKSpriteNode *_scoreLabel = [SKSpriteNode spriteNodeWithImageNamed:@"HighScore"];//Vai ser trocado por Score
+    SKSpriteNode *_scoreLabel = [SKSpriteNode spriteNodeWithImageNamed:@"score"];
     SKLabelNode *_label = [[SKLabelNode alloc]init];
     
     float highscore = [[ScoreData sharedGameData] highScore];
@@ -63,10 +63,10 @@
     
     _label.fontColor = [SKColor blackColor];
     
-    [_label setPosition:CGPointMake(390, 115)];
+    [_label setPosition:CGPointMake(375, 115)];
     [self addChild:_label];
     _scoreLabel.zPosition = 1;
-    _scoreLabel.position = CGPointMake(130 - _scoreLabel.size.width,-65);
+    _scoreLabel.position = CGPointMake(85 - _scoreLabel.size.width,-65);
     [_scoreLabel setScale:0.6];
     return _scoreLabel;
 }
@@ -75,7 +75,7 @@
     SKSpriteNode *_highScore = [SKSpriteNode spriteNodeWithImageNamed:@"HighScore"];
     SKLabelNode *_label = [[SKLabelNode alloc]init];
     _label.fontColor = [SKColor blackColor];
-    [_label setPosition:CGPointMake(390, 85)];
+    [_label setPosition:CGPointMake(375, 85)];
     
     [_label setText:[NSString stringWithFormat:@"%.1f",_score]];//Chamar para calcular Score
     [self addChild:_label];
@@ -99,7 +99,7 @@
 
 //-------Buttons na tela
 -(SKNode*)addQuitButton{
-    SKSpriteNode *_quit = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];//Mudar para o símbolo de restart
+    SKSpriteNode *_quit = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];
     [_quit setName:@"quit"];
     [_quit setScale:1.0];
     _quit.zPosition = 1;
