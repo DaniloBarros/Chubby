@@ -642,7 +642,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         _highScore = MAX(_highScore, _score);
         
+        
         [[ScoreData sharedGameData] setHighScore:_highScore];
+        [[ScoreData sharedGameData] save];
         
         GameOverScene *scene = [[GameOverScene alloc]initWithSize:self.frame.size andScore:_score];
         [self.view presentScene:scene];
