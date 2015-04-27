@@ -183,7 +183,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             //add tree
             [self addTree];
             //Add Enemy
-            [self addEnemy];
+            //[self addEnemy];
             
             _scoreLabel = [[SKLabelNode alloc] init];
             _scoreLabel.fontSize = 18;
@@ -576,9 +576,11 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         _parallaxIsOn = YES;
 
         
+        
         //Gambiarra
         _bgLastPosition = CGPointMake(1304, 0);
-        //NSLog(@"Inicial %f", _bgLastPosition.x);
+        
+        [self addEnemy];
         
         [self addChild:_scoreLabel];
         [self addChild:_fries];
@@ -664,6 +666,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         NSLog(@"Game Over %.1f", _score);
         
         _highScore = MAX(_highScore, _score);
+        
         
         [[ScoreData sharedGameData] setHighScore:_highScore];
         [[ScoreData sharedGameData] save];
@@ -825,7 +828,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 -(void)timeShotInterval: (CFTimeInterval)currentTime{
-    if (_timeToNextShot - currentTime <= 0 && _parallaxIsOn) {
+    if (_timeToNextShot - currentTime <= 0 && [_enemy.name isEqualToString:@"enemy"]) {
         [self playShot];
         _timeToNextShot = ScalarRandomRange(5, 9);
         _timeToNextShot +=currentTime;
@@ -870,9 +873,20 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void)addEnemy{
     _enemy = [EnemyCharacterNode initWithPosition:CGPointZero];
     _enemy = [EnemyCharacterNode initWithPosition:
-              CGPointMake(self.size.width-_enemy.size.width, _ground.position.y + _enemy.size.height)];
+              CGPointMake(self.size.width + _enemy.size.width, _ground.position.y + _enemy.size.height)];
+    
+    SKAction *name = [SKAction runBlock:^{
+        
+        [_enemy setName:@"enemy"];
+        
+    }];
+    
+    SKAction *move = [SKAction moveByX: - (_enemy.self.size.width*2) y:0 duration:1.0];
+    SKAction *sequence = [SKAction sequence:@[[SKAction waitForDuration:1], move, name]];
+    //[_enemy runAction:sequence];
+    
     [self addChild:_enemy];
-
+    [_enemy runAction:sequence];
 }
 
 -(void)addMainCharacter{
