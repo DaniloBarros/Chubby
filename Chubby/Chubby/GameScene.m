@@ -10,11 +10,14 @@
 #import "MainCharacterNode.h"
 #import "EnemyCharacterNode.h"
 #import "PBParallaxScrolling.h"
-#import "ItensNode.h"
 #import "GameViewController.h"
 #import "GameOverScene.h"
 #import "Bullet.h"
 #import "MarshmallowNode.h"
+#import "TutorialScene.h"
+#import "CottonCandyNode.h"
+#import "FrenchFries.h"
+#import "IceCreamNode.h"
 #import "ScoreData.h"
 
 //#define MAX_IMPULSE 100.0
@@ -22,7 +25,8 @@
 #define SUPER_FALL 7
 #define NATURAL_FALL 0.4
 
-static const float SHOT_MOVE_POINTS_PER_SEC = 350;
+
+static const float SHOT_MOVE_POINTS_PER_SEC = 300;
 
 static const CGPoint gravity(){
     return CGPointMake(0, -0.03);
@@ -84,7 +88,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 {
     MainCharacterNode *_mainCharacter;
     EnemyCharacterNode *_enemy;
-    ItensNode *_item;
+    FrenchFries *_frenchFriesItem;
+    IceCreamNode *_iceCreamItem;
+    CottonCandyNode *_cottonCandyItem;
+    
     MarshmallowNode *_marshmallow;
     
     SKLabelNode *_scoreLabel;
@@ -124,10 +131,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     CGFloat _speed;
     CGFloat _fall;
     CGFloat _timeToNextShot;
-    CGFloat _timeToNextItem;
     CGFloat _impulse;
     CGFloat _impulsePlus;
     CGFloat _timeToNextMarshmallow;
+    CGFloat _timeToNextFrenchFries ;
+    CGFloat _timeToNextCottonCandy;
+    CGFloat _timeToNextIceCream;
     
     CGPoint _inicio;
     
@@ -151,7 +160,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     SKSpriteNode *_restart;
     SKSpriteNode *_exit;
-    
+    SKSpriteNode *_tutorial;
 }
 
 -(id)initWithSize:(CGSize)size{
@@ -199,6 +208,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             
             //AddExit
             [self addExit];
+            
+            //AddTutorial
+            [self addTutorial];
 //-----------------------------------
             _impulsePlus = 0;
             _first = YES;
@@ -271,7 +283,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _mainCharacter.zPosition = -1;
     _enemy.zPosition = -1;
     _bullet.zPosition = -1;
-    _item.zPosition = -1;
+    _cottonCandyItem.zPosition = -1;
+    _frenchFriesItem.zPosition = -1;
+    _iceCreamItem.zPosition = -1;
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -414,13 +428,19 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [self playStopMusic];
     }else if([node.name isEqualToString:@"exit"]){
         exit(0);
+    }else if ([node.name isEqualToString:@"tutorial"]){
+        [self goTutorial];
     }else{
-        [_mensage removeFromParent];
-        [_logo removeFromParent];
-        [_exit removeFromParent];
-        [_musicButton removeFromParent];
         [self fall:_first];
+        [_mensage removeFromParent];
+        [_exit removeFromParent];
+        [_tutorial removeFromParent];
     }
+}
+
+-(void)goTutorial{
+    TutorialScene *scene = [[TutorialScene alloc]initWithSize:self.frame.size];
+    [self.view presentScene:scene];
 }
 
 
@@ -465,7 +485,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         if (CGRectIntersectsRect(marshmallow.frame, _mainCharacter.frame)) {
                 
-            [self applyForce:0.0 dy:.5];
+            [self applyForce:0.0 dy:.3];
             SKAction *flyBack = [SKAction repeatActionForever:[_mainCharacter flyAnimation]];
             [_mainCharacter runAction:flyBack];
 
@@ -529,8 +549,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                 node.name = @"";
                 [node removeFromParent];
                 
-                if((_speed-5)>0)
-                    _speed -= 5;
+                if((_speed-7)>0)
+                    _speed -= 7;
                 else
                     _speed = 0;
                 
@@ -620,6 +640,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         if (_tree) {
             _tree.position = CGPointMake(_tree.position.x - _speed, _tree.position.y);
         }
+        if(_logo){
+          _logo.position = CGPointMake(_logo.position.x - _speed, _logo.position.y);
+        }
     }
 }
 
@@ -704,38 +727,87 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 }
 
--(void)addItems{
+-(void)addFrenchFriesItem{
     CGFloat range = ScalarRandomRange(30, 90);
     
-    _item = [[ItensNode alloc] initWithPosition:CGPointMake(self.size.width,
+    _frenchFriesItem = [[FrenchFries alloc] initWithPosition:CGPointMake(self.size.width,
                                                             self.size.height*(range/100))];
-    _item.name = @"items";
+    _frenchFriesItem.name = @"items";
     
-    [self addChild:_item];
+    [self addChild:_frenchFriesItem];
     
 }
+
+-(void)addCottonCandyItem{
+    
+    CGFloat range = ScalarRandomRange(30, 90);
+    
+    _cottonCandyItem= [[CottonCandyNode alloc] initWithPosition:CGPointMake(self.size.width,
+                                                                         self.size.height*(range/100))];
+    _cottonCandyItem.name = @"items";
+    
+    [self addChild:_cottonCandyItem];
+    
+}
+
+-(void)addIceCreamItem{
+    
+    CGFloat range = ScalarRandomRange(30, 90);
+    
+    _iceCreamItem = [[IceCreamNode alloc] initWithPosition:CGPointMake(self.size.width,
+                                                                            self.size.height*(range/100))];
+    _iceCreamItem.name = @"items";
+    
+    [self addChild:_iceCreamItem];
+    
+}
+
+
 
 -(void)addMarshmallow{
     
     _marshmallow = [MarshmallowNode initWithPosition:CGPointMake(self.size.width,
                                                                  26.25)];
     _marshmallow.name = @"marshmallow";
+    
     [self addChild:_marshmallow];
 
 }
 
 
 
+
 -(void)timeItemInterval: (CFTimeInterval)currentTime{
     
-    if(_timeToNextItem - currentTime <= 0 && _parallaxIsOn){
-        for (int cont = ScalarRandomRange(1, 3); cont>0; cont--) {
-            [self addItems];
-        }
+    
+    if(_timeToNextFrenchFries - currentTime <= 0 && _parallaxIsOn){
+        for (int cont = ScalarRandomRange(1, 4); cont>0; cont--) {
+            [self addFrenchFriesItem];
+       }
                 
-        _timeToNextItem = ScalarRandomRange(1, 3);
-        _timeToNextItem+= currentTime;
+        _timeToNextFrenchFries = ScalarRandomRange(1, 2);
+        _timeToNextFrenchFries+= currentTime;
     }
+    
+    if(_timeToNextCottonCandy - currentTime <= 0 && _parallaxIsOn){
+        for ( int cont = ScalarRandomRange(1, 2); cont>0; cont--) {
+            [self addCottonCandyItem];
+        }
+        
+        _timeToNextCottonCandy= ScalarRandomRange(1, 10);
+        _timeToNextCottonCandy+= currentTime+1;
+    }
+    
+    if(_timeToNextIceCream - currentTime <= 0 && _parallaxIsOn){
+        for (int cont = ScalarRandomRange(1, 2); cont>0; cont--) {
+            [self addIceCreamItem];
+       }
+        
+        _timeToNextIceCream = ScalarRandomRange(1, 10);
+        _timeToNextIceCream+= currentTime+2;
+    }
+
+
 }
 
 -(void)timeMarshmallowInterval: (CFTimeInterval)currentTime{
@@ -775,7 +847,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _pause.name = @"pause";
     [_pause setScale:0.13];
     
-    [self addChild:_pause];
+   // [self addChild:_pause];
 }
 
 -(void)addScenario{
@@ -867,12 +939,13 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 -(void)addMensage{
+//    _mensage = [[SKLabelNode alloc]initWithFontNamed:@"Rebbiya"];
     _mensage = [[SKLabelNode alloc]init];
     _mensage.fontSize = 45;
-    _mensage.fontColor = [SKColor redColor];
-    _mensage.position = CGPointMake(self.size.width/1.4, self.size.height/10.13);
+    _mensage.fontColor = [SKColor blueColor];
+    _mensage.position = CGPointMake(self.size.width/1.4, self.size.height/8.13);
     _mensage.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeRight;
-    [_mensage setText:@"Tap to Play"];
+    _mensage.text = [NSString stringWithFormat:@"Tap To Play"];
     //    [_mensage runAction:[SKAction sequence:@[[SKAction fadeInWithDuration:0.5], [SKAction fadeOutWithDuration:1]]]]; //Piscando só uma vez
     [self addChild:_mensage];
 }
@@ -993,7 +1066,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 -(void)addMusic{
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"1-06 Eterna" ofType:@"mp3"]];
+
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"Boom" ofType:@"mp3"]];
     _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
     _audio.numberOfLoops = -1;
     [_audio play];
@@ -1004,9 +1078,18 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void)addExit{
     _exit = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];
     [_exit setName:@"exit"];
-    _exit.position = CGPointMake(self.size.width/1.1, self.size.height/1.43);
+    _exit.position = CGPointMake(self.size.width/1.1, self.size.height/1.93);
     [_exit setScale:1.0];
     [self addChild:_exit];
+}
+
+
+-(void)addTutorial{
+    _tutorial = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];
+    [_tutorial setName:@"tutorial"];
+    _tutorial.position = CGPointMake(self.size.width/1.1, self.size.height/1.43);
+    [_tutorial setScale:1.0];
+    [self addChild:_tutorial];
 }
 
 
