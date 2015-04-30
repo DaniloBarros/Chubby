@@ -182,8 +182,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             [self addTrampoline];
             //add tree
             [self addTree];
-            //Add Enemy
-            //[self addEnemy];
+            
             
             _scoreLabel = [[SKLabelNode alloc] init];
             _scoreLabel.fontSize = 18;
@@ -675,7 +674,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     }
     
     [self moveLeft];
-
+    
     //If the game is paused, everything stop
     if (self.paused == NO) {
         [self timeShotInterval: currentTime];
@@ -953,9 +952,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void)addMensage{
 //    _mensage = [[SKLabelNode alloc]initWithFontNamed:@"Rebbiya"];
     _mensage = [[SKLabelNode alloc]init];
-    _mensage.fontSize = 45;
-    _mensage.fontColor = [SKColor blueColor];
-    _mensage.position = CGPointMake(self.size.width/1.4, self.size.height/8.13);
+    _mensage.fontSize = 25;
+    _mensage.fontColor = [SKColor blackColor];
+    _mensage.position = CGPointMake(self.size.width/4.4, self.size.height/1.13);
     _mensage.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeRight;
     _mensage.text = [NSString stringWithFormat:@"Tap To Play"];
     //    [_mensage runAction:[SKAction sequence:@[[SKAction fadeInWithDuration:0.5], [SKAction fadeOutWithDuration:1]]]]; //Piscando só uma vez
@@ -975,7 +974,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 -(void) pauseAction{
     self.paused = YES;
-    [_pause removeFromParent];//Arrumar um jeito para funcionar
+    [_pause removeFromParent];
     [self addBackgroundPaused];
     [self actionEverythingUnFocus];//Arrumar --- Set the characters behind the pause screen -- bullet
     _pauseScreen = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(self.frame.size.width, self.frame.size.height)];
@@ -1038,6 +1037,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 //-------Pause Part
 -(void)stopPauseMusic{
+//    _musicSound = NO;
     if (_audio.isPlaying) {
         [self stopMusicActionPause];
     }else{
@@ -1079,7 +1079,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 -(void)addMusic{
 
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"Boom" ofType:@"mp3"]];
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"FlyingTheme" ofType:@"mp3"]];
     _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
     _audio.numberOfLoops = -1;
     [_audio play];
