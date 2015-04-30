@@ -16,6 +16,8 @@
 //O maior Score obtido
 @property (assign, nonatomic) float highScore;
 
+@property (assign, nonatomic) BOOL sound;
+
 //Dará acesso a instancia de classe
 +(instancetype)sharedGameData;
 -(void) save;
