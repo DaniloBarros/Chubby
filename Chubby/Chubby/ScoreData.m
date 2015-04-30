@@ -11,12 +11,16 @@
 @implementation ScoreData
 
 static NSString* const SSGameDataHighScoreKey = @"highScore";
+static NSString* const SSGameDataSoundKey = @"sound";
+static NSString* const SSGameDataFriesKey = @"fries";
 
 -(instancetype)initWithCoder:(NSCoder *)aDecoder{
     self = [self init];
     
     if (self) {
         _highScore = [aDecoder decodeDoubleForKey:SSGameDataHighScoreKey];
+        _sound = [aDecoder decodeBoolForKey:SSGameDataSoundKey];
+        _fries = [aDecoder decodeIntForKey:SSGameDataFriesKey];
     }
     return self;
     
@@ -24,6 +28,8 @@ static NSString* const SSGameDataHighScoreKey = @"highScore";
 
 -(void)encodeWithCoder:(NSCoder *)aCoder{
     [aCoder encodeDouble:self.highScore forKey:SSGameDataHighScoreKey];
+    [aCoder encodeBool:self.sound forKey:SSGameDataSoundKey];
+    [aCoder encodeInt:self.fries forKey:SSGameDataFriesKey];
 }
 
 +(instancetype)sharedGameData{

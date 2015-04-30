@@ -12,7 +12,7 @@
 @implementation TutorialScene
 - (id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
-        SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"InicioTutorial"];
+        SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"inicioTutorial"];
         bg.anchorPoint = CGPointZero;
         bg.position = CGPointZero;
         bg.zPosition = -1000;

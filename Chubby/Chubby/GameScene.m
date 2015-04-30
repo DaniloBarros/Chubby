@@ -189,7 +189,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             _scoreLabel.fontColor = [SKColor blackColor];
             _scoreLabel.position = CGPointMake(10, self.size.height - 20);
             _scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
-            [_scoreLabel setText:[NSString stringWithFormat:@"Score: %.1f",0.0]];
+            
             
             
             _fries = [[SKLabelNode alloc] init];
@@ -197,7 +197,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             _fries.fontColor = [SKColor blackColor];
             _fries.position = CGPointMake(_scoreLabel.position.x, _scoreLabel.position.y - _scoreLabel.fontSize );
             _fries.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
-            [_fries setText:[NSString stringWithFormat:@"Fries: %d",0]];
+            
             
             
 //-----------------------------------
@@ -218,7 +218,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
                                @"NuvemParallax@2x"];
             _parallaxIsOn = NO;
             
-            _speed = 14;
+            _speed = 17;
             _force = CGVectorMake(0, 0);
             _score = 0;
             
@@ -227,7 +227,11 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             
             //Chama dados highscore
             _highScore = [ScoreData sharedGameData].highScore;
+            //_audio.isPlaying  = [ScoreData sharedGameData].sound;
+            _frenchFriesPoint = [ScoreData sharedGameData].fries;
             
+            [_scoreLabel setText:[NSString stringWithFormat:@"Score: %.1f",0.0]];
+            [_fries setText:[NSString stringWithFormat:@"Fries: %d",_frenchFriesPoint]];
         }
         return self;
 }
@@ -476,63 +480,77 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [_trampoline runAction:actionTrampoline withKey:@"trampoline"];
         [self launch];
     }
-
-    [self enumerateChildNodesWithName:@"marshmallow" usingBlock:^(SKNode *node, BOOL *stop){
     
-        SKSpriteNode *marshmallow = (SKSpriteNode *)node;
-        marshmallow.position = CGPointMake(marshmallow.position.x - _speed, marshmallow.position.y);
-        
-        if (CGRectIntersectsRect(marshmallow.frame, _mainCharacter.frame)) {
-            [self applyForce:0.0 dy:.3];
-            SKAction *flyBack = [SKAction repeatActionForever:[_mainCharacter flyAnimation]];
-            [_mainCharacter runAction:flyBack];
-
-        }
+    //Move and check collision in ITENS
     
-    }];
-
-    [self enumerateChildNodesWithName:@"items" usingBlock:^(SKNode *node, BOOL *stop){
+    if(!self.paused){
         
-        _idCandy = [SKTexture textureWithImageNamed:@"Candy"];
-        _idFrenchFries = [SKTexture textureWithImageNamed:@"FrenchFries"] ;
-        _idIceCream = [SKTexture textureWithImageNamed:@"IceCream"];
-        
-        SKSpriteNode *item = (SKSpriteNode *)node;
-        item.position = CGPointMake(item.position.x - _speed, item.position.y);
-        
-        
-        if(CGRectIntersectsRect(item.frame, _mainCharacter.frame)){
+        [self enumerateChildNodesWithName:@"marshmallow" usingBlock:^(SKNode *node, BOOL *stop){
             
-            NSString *strItem = [[NSString alloc] initWithString:[[item texture] description]];
-            NSString *strCandy = [[NSString alloc] initWithString:[_idCandy description]];
+            SKSpriteNode *marshmallow = (SKSpriteNode *)node;
+            marshmallow.position = CGPointMake(marshmallow.position.x - _speed, marshmallow.position.y);
             
-            if ([strItem isEqual:strCandy]) {
+            if (CGRectIntersectsRect(marshmallow.frame, _mainCharacter.frame)) {
+                [self applyForce:0.0 dy:.3];
+                SKAction *flyBack = [SKAction repeatActionForever:[_mainCharacter flyAnimation]];
+                SKAction *immuneYES = [SKAction runBlock:^{
+                    _isImmune = YES;
+                }];
+                
+                SKAction *immuneNO = [SKAction runBlock:^{
+                    _isImmune = NO;
+                }];
+                SKAction *sequence = [SKAction sequence:@[immuneYES, [SKAction waitForDuration:0.51], immuneNO, flyBack]];
+                [_mainCharacter runAction:sequence];
+                
+            }
+            
+        }];
+        
+        [self enumerateChildNodesWithName:@"items" usingBlock:^(SKNode *node, BOOL *stop){
+            
+            _idCandy = [SKTexture textureWithImageNamed:@"Candy"];
+            _idFrenchFries = [SKTexture textureWithImageNamed:@"FrenchFries"] ;
+            _idIceCream = [SKTexture textureWithImageNamed:@"IceCream"];
+            
+            SKSpriteNode *item = (SKSpriteNode *)node;
+            item.position = CGPointMake(item.position.x - _speed, item.position.y);
+            
+            
+            if(CGRectIntersectsRect(item.frame, _mainCharacter.frame)){
+                
+                NSString *strItem = [[NSString alloc] initWithString:[[item texture] description]];
+                NSString *strCandy = [[NSString alloc] initWithString:[_idCandy description]];
+                
+                if ([strItem isEqual:strCandy]) {
                     _speed += 2;
                     [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
-            }
-
-            strCandy = [[NSString alloc] initWithString:[_idIceCream description]];
-            
-            if ([strItem isEqual:strCandy]) {
+                }
                 
-                [self applyForce:0.5 dy:0.5];
-            }
-            strCandy = [[NSString alloc] initWithString:[_idFrenchFries description]];
-
-            if ([strItem isEqual:strCandy]) {
-                _frenchFriesPoint++;
+                strCandy = [[NSString alloc] initWithString:[_idIceCream description]];
                 
-                [_fries setText:[NSString stringWithFormat:@"Fries: %d", _frenchFriesPoint]];
+                if ([strItem isEqual:strCandy]) {
+                    
+                    [self applyForce:0.5 dy:0.5];
+                }
+                strCandy = [[NSString alloc] initWithString:[_idFrenchFries description]];
                 
-                //NSLog(@"%d",_frenchFriesPoint);
+                if ([strItem isEqual:strCandy]) {
+                    _frenchFriesPoint++;
+                    
+                    [_fries setText:[NSString stringWithFormat:@"Fries: %d", _frenchFriesPoint]];
+                    
+                    //NSLog(@"%d",_frenchFriesPoint);
+                }
+                
+                item.name = @"";
+                [item removeAllActions];
+                [item removeFromParent];
+                
             }
-            
-            item.name = @"";
-            [item removeAllActions];
-            [item removeFromParent];
-            
-        }
-    }];
+        }];
+        
+    }
     //verificar colisaor
     //Bullet Collision
     
@@ -667,6 +685,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         
         [[ScoreData sharedGameData] setHighScore:_highScore];
+        [[ScoreData sharedGameData] setFries:_frenchFriesPoint];
+        [[ScoreData sharedGameData] setSound:_audio.isPlaying];
         [[ScoreData sharedGameData] save];
         
         GameOverScene *scene = [[GameOverScene alloc]initWithSize:self.frame.size andScore:_score];
@@ -674,9 +694,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     }
     
     [self moveLeft];
-    
     //If the game is paused, everything stop
     if (self.paused == NO) {
+        [self moveLeft];
         [self timeShotInterval: currentTime];
         [self moveShot];
         
@@ -864,6 +884,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     _backgroundPaused.position = CGPointMake(self.size.width/2, self.size.height/2);
     
     [_backgroundPaused setScale:1.0];
+    _backgroundPaused.zPosition += 10;
+
     [self addChild:_backgroundPaused];
 }
 
@@ -937,6 +959,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [_play setAnchorPoint:CGPointZero];
     [_play setScale:2.0]; //0.05
     [_play setPosition:CGPointMake(-65 - _play.size.width,-27)];
+    _play.zPosition += 10;
     [_pauseScreen addChild:_play];
 }
 
@@ -973,15 +996,21 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 -(void) pauseAction{
+    
+    int z = 10;
+    
     self.paused = YES;
+
     [_pause removeFromParent];
     [self addBackgroundPaused];
     [self actionEverythingUnFocus];//Arrumar --- Set the characters behind the pause screen -- bullet
     _pauseScreen = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(self.frame.size.width, self.frame.size.height)];
     //Seta cor
     _pauseScreen.fillColor = [SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.70];
+    _pauseScreen.zPosition += z;
     [self addChild:_pauseScreen];
     _pauseScreen.position = CGPointMake(self.size.width/2, self.size.height/2);
+    
     [self addPlayButton];
     [self addRestartButton];
     [self addMusicButton];
@@ -989,7 +1018,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     //AddPauseLabel
     SKSpriteNode *_pauseLabel  = [SKSpriteNode spriteNodeWithImageNamed:@"Pause"];
     [_pauseLabel setScale:0.85];
-    _pauseLabel.zPosition = 1;
+    _pauseLabel.zPosition = 1 + z;
     [_pauseLabel setPosition:CGPointMake(85 - _pauseLabel.size.width,80)];
     [_pauseScreen addChild:_pauseLabel];
 
@@ -1000,6 +1029,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [_restart setName:@"restart"];
     [_restart setScale:1.5];
     [_restart setPosition:CGPointMake(0 - _restart.size.width/77,5)];
+    _restart.zPosition += 10;
     [_pauseScreen addChild:_restart];
 }
 
@@ -1066,7 +1096,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [_musicButton setAnchorPoint:CGPointZero];
     [_musicButton setScale:2.0];
     [_musicButton setPosition:CGPointMake(60 - _musicButton.size.width/25, -25)];
-    _musicButton.zPosition = 0.7;
+    _musicButton.zPosition = 0.7 + 10;
     [_pauseScreen addChild:_musicButton];
 }
 -(void)addMusicIcon{
@@ -1079,7 +1109,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 -(void)addMusic{
 
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"FlyingTheme" ofType:@"mp3"]];
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"jumperMusic" ofType:@"mp3"]];
     _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
     _audio.numberOfLoops = -1;
     [_audio play];
