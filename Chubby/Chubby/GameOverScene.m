@@ -33,8 +33,6 @@
     if ([node.name isEqualToString:@"restart"]) {
         GameScene *scene = [[GameScene alloc]initWithSize:self.frame.size];
         [self.view presentScene:scene];
-    }else if ([node.name isEqualToString:@"quit"]){
-        exit(0);
     }
 }
 
@@ -46,7 +44,6 @@
     [background addChild:[self addRestartButton]];
     [background addChild:[self addHighScoreLabel]];
     [background addChild:[self addLastScoreLabel]];
-    [background addChild:[self addQuitButton]];
     [background addChild:[self addGameOverLabel]];
     [self addChild:background];
 }
@@ -98,21 +95,13 @@
 
 
 //-------Buttons na tela
--(SKNode*)addQuitButton{
-    SKSpriteNode *_quit = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];
-    [_quit setName:@"quit"];
-    [_quit setScale:1.0];
-    _quit.zPosition = 1;
-    [_quit setPosition:CGPointMake(-50 - _quit.size.width,9)];
-    return _quit;
-}
 
 -(SKNode*)addRestartButton{
     SKSpriteNode *_restart = [SKSpriteNode spriteNodeWithImageNamed:@"restart"];
     [_restart setName:@"restart"];
     [_restart setScale:1.0];
     _restart.zPosition = 1;
-    [_restart setPosition:CGPointMake(100 - _restart.size.width,9)];
+    [_restart setPosition:CGPointMake(35 - _restart.size.width,9)];
     return _restart;
 }
 

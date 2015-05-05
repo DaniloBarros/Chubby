@@ -159,7 +159,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     SKSpriteNode *_logo;
     
     SKSpriteNode *_restart;
-    SKSpriteNode *_exit;
     SKSpriteNode *_tutorial;
 }
 
@@ -204,9 +203,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             //AddMusic
             [self addMusic];
             [self addMusicIcon];
-            
-            //AddExit
-            [self addExit];
             
             //AddTutorial
             [self addTutorial];
@@ -429,14 +425,11 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 -(void)firstTime:(SKSpriteNode*)node{
     if ([node.name isEqualToString:@"music"]) {
         [self playStopMusic];
-    }else if([node.name isEqualToString:@"exit"]){
-        exit(0);
     }else if ([node.name isEqualToString:@"tutorial"]){
         [self goTutorial];
     }else{
         [self fall:_first];
         [_mensage removeFromParent];
-        [_exit removeFromParent];
         [_tutorial removeFromParent];
     }
 }
@@ -1117,15 +1110,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 //-------------------------------------------------
--(void)addExit{
-    _exit = [SKSpriteNode spriteNodeWithImageNamed:@"quit"];
-    [_exit setName:@"exit"];
-    _exit.position = CGPointMake(self.size.width/1.1, self.size.height/1.93);
-    [_exit setScale:1.0];
-    [self addChild:_exit];
-}
-
-
 -(void)addTutorial{
     _tutorial = [SKSpriteNode spriteNodeWithImageNamed:@"TutorialSymbol"];
     [_tutorial setName:@"tutorial"];
