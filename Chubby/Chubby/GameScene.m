@@ -693,7 +693,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [self.view presentScene:scene];
     }
     
-    [self moveLeft];
+    //[self moveLeft];
     //If the game is paused, everything stop
     if (self.paused == NO) {
         [self moveLeft];
@@ -1109,7 +1109,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 -(void)addMusic{
 
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"jumperMusic" ofType:@"mp3"]];
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"jumperMusic1" ofType:@"mp3"]];
     _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
     _audio.numberOfLoops = -1;
     [_audio play];

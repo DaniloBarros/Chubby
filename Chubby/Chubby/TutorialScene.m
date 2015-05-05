@@ -14,7 +14,7 @@
     if (self = [super initWithSize:size]) {
         SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"inicioTutorial"];
         bg.anchorPoint = CGPointZero;
-        bg.position = CGPointZero;
+        bg.position = CGPointMake(0, 20);
         bg.zPosition = -1000;
         [self addChild:bg];
     }
@@ -37,7 +37,7 @@
     if (self = [super initWithSize:size]) {
         SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"FallTutorial"];
         bg.anchorPoint = CGPointZero;
-        bg.position = CGPointZero;
+        bg.position = CGPointMake(0, 20);
         bg.zPosition = -1000;
         [self addChild:bg];
         
@@ -60,7 +60,7 @@
     if (self = [super initWithSize:size]) {
         SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"MarshTutorial"];
         bg.anchorPoint = CGPointZero;
-        bg.position = CGPointZero;
+        bg.position = CGPointMake(0, 20);
         bg.zPosition = -1000;
         [self addChild:bg];
         
@@ -83,7 +83,7 @@
     if (self = [super initWithSize:size]) {
         SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"BatataTutorial"];
         bg.anchorPoint = CGPointZero;
-        bg.position = CGPointZero;
+        bg.position = CGPointMake(0, 20);
         bg.zPosition = -1000;
         [self addChild:bg];
         
@@ -105,7 +105,7 @@
     if (self = [super initWithSize:size]) {
         SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"ItemTutorial"];
         bg.anchorPoint = CGPointZero;
-        bg.position = CGPointZero;
+        bg.position = CGPointMake(0, 20);
         bg.zPosition = -1000;
         [self addChild:bg];
         
@@ -127,7 +127,7 @@
     if (self = [super initWithSize:size]) {
         SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"SliceTutorial"];
         bg.anchorPoint = CGPointZero;
-        bg.position = CGPointZero;
+        bg.position = CGPointMake(0, 20);
         bg.zPosition = -1000;
         [self addChild:bg];
         
@@ -149,7 +149,7 @@
     if (self = [super initWithSize:size]) {
         SKSpriteNode *bg = [SKSpriteNode spriteNodeWithImageNamed:@"LastImage"];
         bg.anchorPoint = CGPointZero;
-        bg.position = CGPointZero;
+        bg.position = CGPointMake(0, 20);
         bg.zPosition = -1000;
         [self addChild:bg];
         
