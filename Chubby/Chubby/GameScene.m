@@ -113,6 +113,9 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     SKSpriteNode *_tree;
     SKSpriteNode *_building;
     
+    SKSpriteNode *_skinnyEating;
+    SKSpriteNode *_branch;
+    
     SKTexture *_idCandy;
     SKTexture *_idFrenchFries;
     SKTexture *_idIceCream;
@@ -181,6 +184,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             [self addTrampoline];
             //add tree
             [self addTree];
+            //add skinny
+            [self addSkinnyInTree];
             
             
             _scoreLabel = [[SKLabelNode alloc] init];
@@ -654,6 +659,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         if(_logo){
           _logo.position = CGPointMake(_logo.position.x - _speed, _logo.position.y);
         }
+        if (_skinnyEating) {
+            _skinnyEating.position = CGPointMake(_skinnyEating.position.x - _speed, _skinnyEating.position.y);
+        }
+        if (_branch) {
+            _branch.position = CGPointMake(_branch.position.x - _speed, _branch.position.y);
+        }
     }
 }
 
@@ -686,7 +697,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [self.view presentScene:scene];
     }
     
-    [self moveLeft];
     //If the game is paused, everything stop
     if (self.paused == NO) {
         [self moveLeft];
@@ -956,7 +966,24 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [_pauseScreen addChild:_play];
 }
 
+-(void)addSkinnyInTree{
 
+    _skinnyEating = [SKSpriteNode spriteNodeWithImageNamed:@"magrelo"];
+    _branch = [SKSpriteNode spriteNodeWithImageNamed:@"Branch"];
+
+    _skinnyEating.anchorPoint = CGPointMake(0.5, 0);
+    _branch.anchorPoint = CGPointMake(0.5, 0);
+    
+    [_skinnyEating setScale:0.5];
+    [_branch setScale:1.5];
+    
+    _skinnyEating.position = CGPointMake(self.size.width*0.7, _tree.position.y*6.8);
+    _branch.position = CGPointMake(self.size.width*0.68, _tree.position.y*6.5);
+    
+    [self addChild:_skinnyEating];
+    [self addChild:_branch];
+
+}
 
 -(void)addLogo{
     _logo = [SKSpriteNode spriteNodeWithImageNamed:@"ChubbyLogo"];
@@ -1102,7 +1129,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 -(void)addMusic{
 
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"jumperMusic" ofType:@"mp3"]];
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"Flaws" ofType:@"mp3"]];
     _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
     _audio.numberOfLoops = -1;
     [_audio play];
