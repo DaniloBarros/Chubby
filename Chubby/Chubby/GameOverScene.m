@@ -9,6 +9,7 @@
 #import "GameOverScene.h"
 #import "GameScene.h"
 #import "ScoreData.h"
+#import "MusicBackground.h"
 @implementation GameOverScene
 {
     float _score;
@@ -17,7 +18,6 @@
 -(id)initWithSize:(CGSize)size andScore:(float)score{
     self = [super initWithSize:size];
     if (self) {
-        
         _score = score;
         
         [self addBackgroundGameOver];
@@ -32,7 +32,9 @@
     SKNode *node = [self nodeAtPoint:[touch locationInNode:self]];
     if ([node.name isEqualToString:@"restart"]) {
         GameScene *scene = [[GameScene alloc]initWithSize:self.frame.size];
+        
         [self.view presentScene:scene];
+        
     }
 }
 
