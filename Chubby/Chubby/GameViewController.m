@@ -42,8 +42,8 @@
         skView.showsNodeCount = NO;
         skView.ignoresSiblingOrder = YES;
         
-        GameScene *scene = [GameScene sceneWithSize:skView.bounds.size];
-        scene.scaleMode = SKSceneScaleModeAspectFill;
+        GameScene *scene = [GameScene sceneWithSize:CGSizeMake(667,375)];
+        
         [skView presentScene:scene];
     }
 }
