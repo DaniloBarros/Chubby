@@ -19,6 +19,7 @@
 #import "FrenchFries.h"
 #import "IceCreamNode.h"
 #import "ScoreData.h"
+#import "MusicBackground.h"
 
 //#define MAX_IMPULSE 100.0
 #define ARC4RANDOM_MAX  0x100000000
@@ -153,9 +154,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     SKShapeNode *_pauseScreen;
     SKLabelNode *_mensage;
-    
-    
-    AVAudioPlayer *_audio;
 
     SKSpriteNode *_backgroundPaused;
     
@@ -163,11 +161,15 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     SKSpriteNode *_restart;
     SKSpriteNode *_tutorial;
+    
+    MusicBackground *t;
 }
 
 -(id)initWithSize:(CGSize)size{
         
         if(self = [super initWithSize:size]){
+            t = [MusicBackground sharedInstance];
+            
             //add scenario game
             [self addScenario];
             //AddMensage
@@ -206,7 +208,6 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             
 //-----------------------------------
             //AddMusic
-            [self addMusic];
             [self addMusicIcon];
             
             //AddTutorial
@@ -418,7 +419,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             [self playAction];
             self.paused = NO;
         }else if ([node.name isEqualToString:@"restart"]){
-            [_audio stop];
+//            [t.musicBgd stop];
             GameScene *scene = [[GameScene alloc]initWithSize:self.frame.size];
             [self.view presentScene:scene];
         } else if([node.name isEqualToString:@"music"]){
@@ -690,7 +691,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         
         [[ScoreData sharedGameData] setHighScore:_highScore];
         [[ScoreData sharedGameData] setFries:_frenchFriesPoint];
-        [[ScoreData sharedGameData] setSound:_audio.isPlaying];
+//        [[ScoreData sharedGameData] setSound:_audio.isPlaying];
         [[ScoreData sharedGameData] save];
         
         GameOverScene *scene = [[GameOverScene alloc]initWithSize:self.frame.size andScore:_score];
@@ -1055,8 +1056,18 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 //Music Methods -----------------------------------
+
+-(SKSpriteNode*)symbolMusic{
+    if(t.musicBgd.playing){
+        _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"music"];
+    }else{
+        _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"mute"];
+    }
+    return _musicButton;
+}
+
 -(void)stopMusic{
-    [_audio pause];
+    [t.musicBgd stop];
     [_musicButton removeFromParent];
     _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"mute"];
     [_musicButton setScale:1.0];
@@ -1068,7 +1079,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 -(void)playMusic{
-    [_audio play];
+    [t.musicBgd play];
     [_musicButton removeFromParent];
     _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"music"];
     [_musicButton setScale:1.0];
@@ -1078,7 +1089,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 }
 
 -(void)playStopMusic{
-    if (_audio.isPlaying) {
+    if (t.musicBgd.playing) {
         [self stopMusic];
     }else{
         [self playMusic];
@@ -1088,17 +1099,17 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 //-------Pause Part
 -(void)stopPauseMusic{
 //    _musicSound = NO;
-    if (_audio.isPlaying) {
+    if (t.musicBgd.playing) {
         [self stopMusicActionPause];
     }else{
-        [_audio play];
+        [t.musicBgd play];
         [_musicButton removeFromParent];
         [self addMusicButton];
     }
 }
 
 -(void)stopMusicActionPause{
-    [_audio pause];
+    [t.musicBgd stop];
     [_musicButton removeFromParent];
     _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"mute"];
     [_musicButton setName:@"music"];
@@ -1111,7 +1122,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 
 
 -(void)addMusicButton{
-    _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"music"];
+    _musicButton = [self symbolMusic];
     [_musicButton setName:@"music"];
     [_musicButton setAnchorPoint:CGPointZero];
     [_musicButton setScale:2.0];
@@ -1120,20 +1131,12 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [_pauseScreen addChild:_musicButton];
 }
 -(void)addMusicIcon{
-    _musicButton = [SKSpriteNode spriteNodeWithImageNamed:@"music"];
+    _musicButton = [self symbolMusic];
+
     [_musicButton setName:@"music"];
     _musicButton.position = CGPointMake(self.size.width/1.1, self.size.height/1.13);
     [_musicButton setScale:1.0];
     [self addChild:_musicButton];
-}
-
--(void)addMusic{
-
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"Flaws" ofType:@"mp3"]];
-    _audio = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
-    _audio.numberOfLoops = -1;
-    [_audio play];
-
 }
 
 //-------------------------------------------------
