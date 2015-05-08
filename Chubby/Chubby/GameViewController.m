@@ -9,6 +9,13 @@
 #import "GameViewController.h"
 #import "GameScene.h"
 #import "GameOverScene.h"
+#import "MusicBackground.h"
+
+@interface GameViewController()
+{
+    AVAudioPlayer *_audio;
+}
+@end
 
 @implementation SKScene (Unarchive)
 
@@ -31,9 +38,16 @@
 
 @implementation GameViewController
 
-- (void)viewWillLayoutSubviews
-{
+- (void)viewWillLayoutSubviews{
     [super viewWillLayoutSubviews];
+    
+    MusicBackground *b = [MusicBackground sharedInstance];
+    
+    
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"Flaws" ofType:@"mp3"]];
+    b.musicBgd = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    b.musicBgd.numberOfLoops = -1;
+    [b.musicBgd play];
     
     SKView *skView = (SKView *)self.view;
     
@@ -42,8 +56,8 @@
         skView.showsNodeCount = NO;
         skView.ignoresSiblingOrder = YES;
         
-        GameScene *scene = [GameScene sceneWithSize:skView.bounds.size];
-        scene.scaleMode = SKSceneScaleModeAspectFill;
+        GameScene *scene = [GameScene sceneWithSize:CGSizeMake(667,375)];
+        
         [skView presentScene:scene];
     }
 }
