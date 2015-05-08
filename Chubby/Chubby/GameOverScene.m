@@ -7,8 +7,10 @@
 //
 
 #import "GameOverScene.h"
+#import "GameController.h"
 #import "GameScene.h"
 #import "ScoreData.h"
+
 @implementation GameOverScene
 {
     float _score;
@@ -19,7 +21,7 @@
     if (self) {
         
         _score = score;
-        
+    
         [self addBackgroundGameOver];
         // Parte do HighScore
         //Parte feita de pontos até ele morrer
@@ -46,6 +48,7 @@
     [background addChild:[self addLastScoreLabel]];
     [background addChild:[self addGameOverLabel]];
     [self addChild:background];
+    
 }
 
 

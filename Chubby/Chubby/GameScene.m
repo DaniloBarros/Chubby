@@ -6,7 +6,9 @@
 //  Copyright (c) 2015 MiniChallenge1. All rights reserved.
 //
 
+#import <Chartboost/Chartboost.h>
 #import "GameScene.h"
+#import "GameController.h"
 #import "MainCharacterNode.h"
 #import "EnemyCharacterNode.h"
 #import "PBParallaxScrolling.h"
@@ -86,6 +88,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
 @implementation GameScene
 
 {
+    GameController *_controller;
+    
     MainCharacterNode *_mainCharacter;
     EnemyCharacterNode *_enemy;
     FrenchFries *_frenchFriesItem;
@@ -228,6 +232,8 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             
             [_scoreLabel setText:[NSString stringWithFormat:@"Score: %.1f",0.0]];
             [_fries setText:[NSString stringWithFormat:@"Fries: %d",_frenchFriesPoint]];
+            
+            [[GameController sharedInstance] setDidDisplayAd:NO];
         }
         return self;
 }
@@ -307,7 +313,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     [self applyForce:3 dy:3];
     
     //Take Out music symbol
-    [_musicButton removeFromParent];
+    if (_musicButton) {
+        [_musicButton removeFromParent];
+    }
+    
     //   Add Pause
     [self pauseNode];
 }
@@ -669,24 +678,100 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
     
     _lastUpdatedTime = currentTime;
     
-    if (_speed==0) {
+    //-------------GameOver Condition
+    
+    if (_speed==0 && ![[GameController sharedInstance] didDisplayAd]) {
+        
         [_mainCharacter removeAllActions];
+        
         _force = CGVectorMake(0, -gravity().y);
-        NSLog(@"Game Over %.1f", _score);
+        _parallaxIsOn = NO;
+        self.paused = YES;
         
         _highScore = MAX(_highScore, _score);
         
+        //-----------Advertising
         
-        [[ScoreData sharedGameData] setHighScore:_highScore];
-        [[ScoreData sharedGameData] setFries:_frenchFriesPoint];
-        [[ScoreData sharedGameData] setSound:_audio.isPlaying];
-        [[ScoreData sharedGameData] save];
+        NSNumber *goTimes = [[GameController sharedInstance] gameOverTimes];
         
-        GameOverScene *scene = [[GameOverScene alloc]initWithSize:self.frame.size andScore:_score];
-        [self.view presentScene:scene];
+        [[GameController sharedInstance] setGameOverTimes:@([goTimes intValue]+1)];
+        
+        NSLog(@"GAMEOVER %d, Display Ad %d , Dismissed %d",[goTimes intValue], [[GameController sharedInstance] didDisplayAd], [[GameController sharedInstance] didDismissedAd]);
+        
+        
+        if ([goTimes intValue] >= 1 && ![[GameController sharedInstance]didDismissedAd]) {
+            
+            BOOL reward = NO;
+            float f = ScalarRandomRange(0, 100);
+            
+            NSLog(@"CONDICAO REWARD %d %@ %f",[[GameController sharedInstance] didDismissedAd], [[GameController sharedInstance] watchedReward], f );
+            
+            if (f < 45 && ![[GameController sharedInstance] didDismissedAd] && [[[GameController sharedInstance] watchedReward] intValue] < 2) {
+                
+                reward = YES;
+                
+                if ([[[GameController sharedInstance] watchedReward] intValue] == 0) {
+                    [Chartboost showRewardedVideo:CBLocationMainMenu];
+                    [[GameController sharedInstance] setDidDisplayAd:YES];
+                }
+                
+                if ([[[GameController sharedInstance] watchedReward] intValue] == 1) {
+                    
+                    NSLog(@"Volta a voar gordo");
+                    
+                    self.paused = NO;
+                    
+                    _force = CGVectorMake(0, gravity().y);
+                    [self launch];
+                    
+                    _speed = 17;
+                    [_parallax editSpeeds:_speed andSpeedDecrease:kPBParallaxBackgroundDefaultSpeedDifferential];
+                    _parallaxIsOn = YES;
+                    
+                    _isImmune = NO;
+                    _mainCharacter.hidden = NO;
+                    
+                    
+                    [[GameController sharedInstance] setWatchedReward:@2];
+                    [[GameController sharedInstance] setDidDismissedAd:YES];
+                    
+                }
+            }
+            
+            if ([goTimes intValue]%3==0 && [[[GameController sharedInstance] watchedReward] intValue] == 0) {
+                
+                NSLog(@"Else GameOver");
+                [Chartboost showInterstitial:@"play"];
+                
+            }
+            
+        }
+        
+        
+        
+        //-----------ENDAdvertising
+        BOOL videoNotPending = ([[[GameController sharedInstance] watchedReward] intValue] == 0 || [[[GameController sharedInstance] watchedReward] intValue] == 2);
+        
+        NSLog(@"Display Ad %d VideoPending %d %d",[[GameController sharedInstance] didDisplayAd], videoNotPending, [[[GameController sharedInstance] watchedReward] intValue]);
+        
+        if (!_speed && videoNotPending && ![[GameController sharedInstance] didDisplayAd] ) {
+            
+            NSLog(@"--------------GameOver Scene");
+            
+            [[GameController sharedInstance] setDidDismissedAd:NO];
+            [[GameController sharedInstance] setWatchedReward:@0];
+            
+            [[ScoreData sharedGameData] setHighScore:_highScore];
+            [[ScoreData sharedGameData] setFries:_frenchFriesPoint];
+            [[ScoreData sharedGameData] setSound:_audio.isPlaying];
+            [[ScoreData sharedGameData] save];
+            
+            GameOverScene *scene = [[GameOverScene alloc]initWithSize:self.frame.size andScore:_score];
+            [self.view presentScene:scene];
+        }
+        
     }
     
-    //[self moveLeft];
     //If the game is paused, everything stop
     if (self.paused == NO) {
         [self moveLeft];
