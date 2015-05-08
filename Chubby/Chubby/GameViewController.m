@@ -44,7 +44,7 @@
     MusicBackground *b = [MusicBackground sharedInstance];
     
     
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"Flaws" ofType:@"mp3"]];
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"jumperMusic1" ofType:@"mp3"]];
     b.musicBgd = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
     b.musicBgd.numberOfLoops = -1;
     [b.musicBgd play];

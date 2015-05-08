@@ -14,6 +14,16 @@ static NSString* const SSGameDataHighScoreKey = @"highScore";
 static NSString* const SSGameDataSoundKey = @"sound";
 static NSString* const SSGameDataFriesKey = @"fries";
 
+- (instancetype)init{
+    self = [super init];
+    
+    if (self) {
+        _sound = true;
+    }
+    
+    return self;
+}
+
 -(instancetype)initWithCoder:(NSCoder *)aDecoder{
     self = [self init];
     

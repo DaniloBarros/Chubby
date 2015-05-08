@@ -211,6 +211,13 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             
             
 //-----------------------------------
+            
+            if ([ScoreData sharedGameData].sound) {
+                [t.musicBgd play];
+            }else{
+                [t.musicBgd stop];
+            }
+            
             //AddMusic
             [self addMusicIcon];
             
@@ -775,7 +782,7 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
             
             [[ScoreData sharedGameData] setHighScore:_highScore];
             [[ScoreData sharedGameData] setFries:_frenchFriesPoint];
-            //[[ScoreData sharedGameData] setSound:_audio.isPlaying];
+            [[ScoreData sharedGameData] setSound:t.musicBgd.isPlaying];
             [[ScoreData sharedGameData] save];
             
             GameOverScene *scene = [[GameOverScene alloc]initWithSize:self.frame.size andScore:_score];
@@ -1192,6 +1199,10 @@ static inline CGFloat ScalarShortestAngleBetween(const CGFloat a, const CGFloat 
         [_musicButton removeFromParent];
         [self addMusicButton];
     }
+    
+    [[ScoreData sharedGameData] setSound:t.musicBgd.isPlaying];
+    [[ScoreData sharedGameData] save];
+    
 }
 
 -(void)stopMusicActionPause{
