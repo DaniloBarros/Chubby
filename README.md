@@ -1,2 +1,2 @@
 # Chubby
-Um aplicativo para iOS em desenvolvido no projeto BEPiD UCB
+Um aplicativo para iOS desenvolvido no projeto BEPiD UCB
